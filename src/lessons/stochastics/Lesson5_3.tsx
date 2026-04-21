@@ -57,7 +57,7 @@ export default function Lesson5_3() {
         </P>
 
         <BlockMath math="\text{MBD-SDE}: \quad dB(t) = \lambda(I - B(t))\,dt + \sigma\,dW_t" />
-        <P className="text-sm italic">
+        <P>
           This is the <strong>Ornstein–Uhlenbeck</strong> process: a noisy MBD. The stationary
           distribution is <InlineMath math="\mathcal{N}(I, \sigma^2/(2\lambda))" /> — a mind at
           rest, rattling around its ideal.

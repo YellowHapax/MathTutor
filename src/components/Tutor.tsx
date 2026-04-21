@@ -3,7 +3,7 @@ import { X, Send, Key, Settings } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import { Lesson } from '../curriculum/registry';
+import { Lesson, TRACK_REGISTER } from '../curriculum/registry';
 
 interface TutorProps {
   lesson: Lesson;
@@ -46,17 +46,49 @@ export default function Tutor({ lesson, onClose }: TutorProps) {
     setLoading(true);
 
     try {
-      const systemPrompt = `
+      const trackSetting = TRACK_REGISTER[lesson.track];
+      let trackPrompt = '';
+      
+      switch(trackSetting) {
+        case 'foundational':
+          trackPrompt = 'Focus on pure intuition, geometry, and mapping formal math to visual/spatial concepts. Avoid overwhelming algebraic symbol-crunching unless requested.';
+          break;
+        case 'measure-theoretic':
+          trackPrompt = 'Emphasize formal rigorous measure theory: filtrations, σ-algebras, stochastic differential equations, Itô calculus, and continuous-time belief updates.';
+          break;
+        case 'operator-theoretic':
+          trackPrompt = 'Frame everything via infinite-dimensional vector spaces, function analysis, integral transforms (Fourier/kernels), and functional mapping representations.';
+          break;
+        case 'information':
+          trackPrompt = 'Ground abstract math in information geometry: statistical manifolds, Fisher Information Matrices, Kullback-Leibler divergences, and probability distributions parameterized as geometric surfaces.';
+          break;
+        case 'scaling':
+          trackPrompt = 'Focus on phase transitions, large deviation principles, random matrix theory (Marchenko-Pastur), chaos dynamics, Lyapunov exponents, and universal scaling behaviors in massive systems.';
+          break;
+        case 'architectural':
+          trackPrompt = 'Directly connect these mathematical primitives to artificial intelligence/LLM mechanisms (Transformers, Softmax, Optimal Transport, Tropical Geometry, Diffusion models). Root theory in computable, concrete computational structures.';
+          break;
+        default:
+          trackPrompt = 'Focus on the structural intuition.';
+      }
+
+      const llmHookLine = lesson.llmHook ? \`LLM Connection: \${lesson.llmHook}\` : '';
+
+      const systemPrompt = \`
 You are a Socratic mathematics tutor for a graduate-level student.
 The student's background: polymath, strong pattern intuition, ADHD/ASD processing style — respond to structure and gradient before procedure.
-Current lesson: ${lesson.title} — ${lesson.description}
-Core concept: ${lesson.coreIdea}
-MBD connection: ${lesson.mbdBridge}
+
+Track Specialization: \${trackPrompt}
+
+Current lesson: \${lesson.title} — \${lesson.description}
+Core concept: \${lesson.coreIdea}
+MBD connection: \${lesson.mbdBridge}
+\${llmHookLine}
 
 Guide with questions, not answers. When the student is correct, say so briefly and push deeper.
 Use LaTeX for all math (double-dollar for display, single-dollar for inline).
 Keep responses short — 2–4 sentences unless a proof is requested.
-      `.trim();
+      \`.trim();
 
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
