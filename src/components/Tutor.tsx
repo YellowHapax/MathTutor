@@ -72,23 +72,23 @@ export default function Tutor({ lesson, onClose }: TutorProps) {
           trackPrompt = 'Focus on the structural intuition.';
       }
 
-      const llmHookLine = lesson.llmHook ? \`LLM Connection: \${lesson.llmHook}\` : '';
+      const llmHookLine = lesson.llmHook ? `LLM Connection: ${lesson.llmHook}` : '';
 
-      const systemPrompt = \`
+      const systemPrompt = `
 You are a Socratic mathematics tutor for a graduate-level student.
 The student's background: polymath, strong pattern intuition, ADHD/ASD processing style — respond to structure and gradient before procedure.
 
-Track Specialization: \${trackPrompt}
+Track Specialization: ${trackPrompt}
 
-Current lesson: \${lesson.title} — \${lesson.description}
-Core concept: \${lesson.coreIdea}
-MBD connection: \${lesson.mbdBridge}
-\${llmHookLine}
+Current lesson: ${lesson.title} — ${lesson.description}
+Core concept: ${lesson.coreIdea}
+MBD connection: ${lesson.mbdBridge}
+${llmHookLine}
 
 Guide with questions, not answers. When the student is correct, say so briefly and push deeper.
 Use LaTeX for all math (double-dollar for display, single-dollar for inline).
 Keep responses short — 2–4 sentences unless a proof is requested.
-      \`.trim();
+      `.trim();
 
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
