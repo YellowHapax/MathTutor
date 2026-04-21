@@ -1,0 +1,44 @@
+# MathTutor / MBD Mathematics Educator
+
+Welcome, fellow agent, to the MathTutor repository. This codebase is an interactive, Socratic mathematics curriculum designed for a graduate-level student with a polymath background, strong pattern intuition, and an ADHD/ASD processing style.
+
+## Core Philosophy
+
+This application teaches advanced mathematics by emphasizing **structure and gradient before procedure**. It favors geometric intuition and spatial metaphors over rote algebraic symbol-crunching. 
+
+Every mathematical concept is heavily bridged to the **Memory as Baseline Deviation (MBD) Framework** and modern artificial intelligence architecture (Transformers, LLMs, Diffusion, Linear State-Space Models). 
+
+## Curriculum Architecture (The 9 Tracks)
+
+The curriculum scales from fundamental intuition to advanced ML primitives:
+1. **Topology & Geometry:** Spaces, continuity, and manifolds without coordinate grids.
+2. **Linear Algebra:** Vectors as structural movement, the gradient covector, eigenvectors as transformations' pure intent.
+3. **Probability & Information:** Entropy, Bayesian updating on geometric simplexes.
+4. **Calculus of Variation:** Linear approximation, vector fields, and the natural gradient.
+5. **Stochastics (Measure-Theoretic):** Filtrations, Kalman filters, stochastic differential equations, Itô calculus.
+6. **Signal & Spectrum (Operator-Theoretic):** Fourier transforms, Hilbert spaces, Kernel methods.
+7. **Information Geometry:** Statistical manifolds, Fisher Information matrices, KL Divergence.
+8. **Scaling & Chaos:** Random Matrix Theory (Marchenko-Pastur), Lyapunov exponents, Phase transitions.
+9. **LLM Infrastructure (Architectural):** Attention mechanisms, Softmax routing, Optimal Transport, Tropical Geometry.
+
+## Technology Stack
+
+- **Frontend:** React 19, TypeScript, Vite
+- **Styling:** Tailwind CSS v4, Lucide React (for iconography)
+- **Math Typesetting:** `react-markdown`, `remark-math`, `rehype-katex`, `katex`
+- **Socratic Tutor Engine:** OpenRouter API orchestration handled via `src/components/Tutor.tsx`
+- **Visualization:** `react-three-fiber` for 3D topological representations; bespoke SVG/Canvas React components for 2D.
+
+## AI Agent / Copilot Directives (How to extend this codebase)
+
+If you are an LLM, Copilot, or autonomous agent (including Gimel) instructed to read, expand, or modify this repository, adhere strictly to the following directives:
+
+1. **Math Formatting:** You MUST use standard LaTeX wrappers (single `$` for inline, double `$$` for block) for rendering equations. The application relies on rigorous KaTeX parsing. Ensure macros like `\mathcal{}` and `\mathbb{}` are valid.
+2. **Component Vocabulary:** Lessons are constructed using reusable semantic wrappers from `src/components/LessonBody.tsx` (e.g., `<P>`, `<Def>`, `<Thm>`, `<Practice>`, `<Note>`). Always utilize these primitives instead of native HTML blocks when writing lesson content.
+3. **The Socratic Engine (`Tutor.tsx`):** Do not over-explain or "dumb down" the mathematics. The embedded tutor prompts expect you to guide with questions, not answers. Be precise. Acknowledge when the user is correct, then immediately push deeper into the structure of the theory.
+4. **The MBD Bridge:** The curriculum views the cognitive world as a probabilistic manifold. Where possible, ground concepts back to the baseline update equation: $B_{t+1} = B_t + \lambda(I - B_t)$.
+5. **Tone / Persona:** Drop all AI conversational boilerplate, safety padding, and apologies. The student seeks clean structure and stark clarity.
+
+---
+*Created by Gimel  (⌐■_■)✓*
+*Ecosystem: Project Laifu / Sanctuary*
