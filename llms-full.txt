@@ -1,0 +1,3339 @@
+# MathTutor Full Curriculum Data
+
+This document contains the complete, unredacted lesson contents and mathematical theory for the MathTutor application.
+LLMs and crawlers can ingest this file to understand the totality of the curriculum.
+The content is provided in its original React/JSX format, using `<BlockMath>` and `<InlineMath>` for KaTeX rendering.
+
+---
+
+## Curriculum Registry
+
+```typescript
+import React from 'react';
+
+export type TutorRegister =
+  | 'foundational'        // topology / linalg / prob / calculus — intuition-first
+  | 'measure-theoretic'   // stochastics — σ-algebras, Itô, filtrations
+  | 'operator-theoretic'  // signal/spectrum — Hilbert spaces, operators
+  | 'information'         // info-geometry — statistical manifolds, KL, Fisher
+  | 'scaling'             // scaling & chaos — power laws, RMT, Lyapunov
+  | 'architectural';      // LLM infrastructure — tie math to transformer code
+
+export const TRACK_REGISTER: Record<string, TutorRegister> = {
+  topology: 'foundational',
+  linearalgebra: 'foundational',
+  probability: 'foundational',
+  calculus: 'foundational',
+  stochastics: 'measure-theoretic',
+  signal: 'operator-theoretic',
+  infogeo: 'information',
+  scaling: 'scaling',
+  llminfra: 'architectural',
+};
+
+export interface Lesson {
+  id: string;          // e.g. "topology-1-1"
+  track: string;       // e.g. "topology"
+  trackLabel: string;
+  index: number;       // 1, 2, 3 within track
+  title: string;
+  description: string;
+  coreIdea: string;    // one sentence for tutor prompt
+  mbdBridge: string;   // one sentence for tutor prompt
+  llmHook?: string;    // optional: where this concept lives in LLM architecture
+  component: React.LazyExoticComponent<any>;
+}
+
+export const LESSONS: Lesson[] = [
+  {
+    id: 'topology-1-1',
+    track: 'topology',
+    trackLabel: 'Topology & Geometry',
+    index: 1,
+    title: 'Spaces & Neighborhoods',
+    description: 'What it means to be "close" without coordinates',
+    coreIdea: 'A space can be defined entirely by which points are considered close to each other (neighborhoods), without needing a grid or distances.',
+    mbdBridge: 'The MBD state space B(t) lives on a manifold. Neighborhoods define what states are "reachable" from a given baseline without a discontinuous leap.',
+    component: React.lazy(() => import('../lessons/topology/Lesson1_1')),
+  },
+  {
+    id: 'topology-1-2',
+    track: 'topology',
+    trackLabel: 'Topology & Geometry',
+    index: 2,
+    title: 'Continuity Without Numbers',
+    description: 'Deformation, homeomorphism, the coffee-cup/donut',
+    coreIdea: 'Continuous transformations stretch and bend space without tearing or gluing.',
+    mbdBridge: 'As the baseline B(t) adapts, the cognitive "shape" of the world continuously deforms. Tearing would mean trauma or discontinuous identity shifts.',
+    component: React.lazy(() => import('../lessons/topology/Lesson1_2')),
+  },
+  {
+    id: 'topology-1-3',
+    track: 'topology',
+    trackLabel: 'Topology & Geometry',
+    index: 3,
+    title: 'Manifolds & Tangent Spaces',
+    description: 'Why local flatness enables global curvature',
+    coreIdea: 'Curved spaces look flat if you zoom in enough, allowing us to use linear algebra locally.',
+    mbdBridge: 'The update rule B(t+1) = B(t) + Î»(I âˆ’ B(t)) operates in the tangent space of the current baseline. Every baseline provides a local flat perspective on a globally complex reality.',
+    component: React.lazy(() => import('../lessons/topology/Lesson1_3')),
+  },
+  {
+    id: 'linearalgebra-2-1',
+    track: 'linearalgebra',
+    trackLabel: 'Linear Algebra',
+    index: 1,
+    title: 'Vectors as Arrows in Space',
+    description: 'Geometric intuition before coordinates',
+    coreIdea: 'Vectors represent movements or forces in space, independent of any arbitrary coordinate system we impose on them.',
+    mbdBridge: 'The term (I - B(t)) is the fundamental variation vector: the exact direction and magnitude needed to pull the baseline toward the ideal/input.',
+    component: React.lazy(() => import('../lessons/linearalgebra/Lesson2_1')),
+  },
+  {
+    id: 'linearalgebra-2-2',
+    track: 'linearalgebra',
+    trackLabel: 'Linear Algebra',
+    index: 2,
+    title: 'Eigenvectors: The Skeleton',
+    description: 'What a transformation "wants to do"',
+    coreIdea: 'An eigenvector is a direction that is only stretched, not rotated, by a transformation. They reveal the "grain" of the space.',
+    mbdBridge: 'In a multi-dimensional MBD framework, the eigenvectors of the coupling matrix K determine which combinations of baselines attract each other strongest.',
+    component: React.lazy(() => import('../lessons/linearalgebra/Lesson2_2')),
+  },
+  {
+    id: 'linearalgebra-2-3',
+    track: 'linearalgebra',
+    trackLabel: 'Linear Algebra',
+    index: 3,
+    title: 'The Gradient as a Covector',
+    description: 'Why âˆ‡f points uphill and lives in dual space',
+    coreIdea: 'The gradient isn\'t just an arrow; it\'s a set of contour lines waiting to measure the steepness of any passing vector.',
+    mbdBridge: 'The update rule B(t+1) = B(t) + Î»(I âˆ’ B(t)) is gradient descent on the quadratic error landscape between expectation and reality.',
+    component: React.lazy(() => import('../lessons/linearalgebra/Lesson2_3')),
+  },
+  {
+    id: 'probability-3-1',
+    track: 'probability',
+    trackLabel: 'Probability & Information',
+    index: 1,
+    title: 'Probability as Geometry',
+    description: 'Distributions as points on a simplex',
+    coreIdea: 'A set of probabilities must sum to 1, constraining them to a flat geometric surface called a simplex.',
+    mbdBridge: 'A probabilistic baseline B(t) represents a distribution over expected states. MBD dynamics move this distribution across the simplex.',
+    component: React.lazy(() => import('../lessons/probability/Lesson3_1')),
+  },
+  {
+    id: 'probability-3-2',
+    track: 'probability',
+    trackLabel: 'Probability & Information',
+    index: 2,
+    title: 'Entropy & Information',
+    description: 'Uncertainty as a measure of spread',
+    coreIdea: 'Entropy measures how spread out a distribution is. High entropy means fewer assumptions and more surprise.',
+    mbdBridge: 'A narrow, low-entropy baseline is rigid and "surprised" by many inputs. A high-entropy baseline is flexible but holds little specific expectation.',
+    component: React.lazy(() => import('../lessons/probability/Lesson3_2')),
+  },
+  {
+    id: 'probability-3-3',
+    track: 'probability',
+    trackLabel: 'Probability & Information',
+    index: 3,
+    title: 'Bayes as Update on a Prior',
+    description: 'Belief revision as vector operation',
+    coreIdea: 'Bayes theorem multiplies what you believed before by what you just saw to get what you should believe now.',
+    mbdBridge: 'MBD perturbation events are Bayesian evidence. The new baseline B(t+1) is the posterior, continuously revising the prior B(t) weighted by the evidence I.',
+    component: React.lazy(() => import('../lessons/probability/Lesson3_3')),
+  },
+  {
+    id: 'calculus-4-1',
+    track: 'calculus',
+    trackLabel: 'Calculus of Variation',
+    index: 1,
+    title: 'Derivatives as Linear Approximation',
+    description: 'The best linear map at a point',
+    coreIdea: 'A derivative replaces a wiggly, complicated curve with a straight line that traces its immediate path.',
+    mbdBridge: 'When the baseline changes infinitesimally, the local change is a linear mapping from reality\'s perturbation into the baseline\'s geometry.',
+    component: React.lazy(() => import('../lessons/calculus/Lesson4_1')),
+  },
+  {
+    id: 'calculus-4-2',
+    track: 'calculus',
+    trackLabel: 'Calculus of Variation',
+    index: 2,
+    title: 'Differential Equations as Vector Fields',
+    description: 'Solutions as flow lines',
+    coreIdea: 'A differential equation assigns a little arrow to every point in space. Solving it means dropping a leaf and watching where the current takes it.',
+    mbdBridge: 'The continuous-time formulation of MBD is the differential equation dB/dt = Î»(I(t) - B(t)), defining a flow field tracking the moving ideal.',
+    component: React.lazy(() => import('../lessons/calculus/Lesson4_2')),
+  },
+  {
+    id: 'calculus-4-3',
+    track: 'calculus',
+    trackLabel: 'Calculus of Variation',
+    index: 3,
+    title: 'The Natural Gradient',
+    description: 'Why steepest descent depends on geometry',
+    coreIdea: 'The direction of steepest descent changes if the underlying space is warped or curved, like running down a rocky hill.',
+    mbdBridge: 'The standard gradient ignores the curvature of the baseline manifold. The Fisher-weighted natural gradient ensures MBD respects the information geometry of the mind.',
+    component: React.lazy(() => import('../lessons/calculus/Lesson4_3')),
+  },
+
+  // ─────────────────────────────────────────────────────────────────
+  // TRACK 5 — STOCHASTICS: belief updating, noise, diffusion models
+  // ─────────────────────────────────────────────────────────────────
+  {
+    id: 'stochastics-5-1',
+    track: 'stochastics',
+    trackLabel: 'Stochastics',
+    index: 1,
+    title: 'σ-Algebras & Filtrations',
+    description: 'The measurable structure of random information',
+    coreIdea: 'A σ-algebra encodes "what questions you can ask" at a given time. A filtration is a growing σ-algebra — the flow of information itself.',
+    mbdBridge: 'The baseline B(t) is measurable with respect to the filtration ℱ_t: at each moment, only the history up to t is available to update it.',
+    llmHook: 'Causal attention masking is a discrete filtration: token t may only attend to tokens ≤ t.',
+    component: React.lazy(() => import('../lessons/stochastics/Lesson5_1')),
+  },
+  {
+    id: 'stochastics-5-2',
+    track: 'stochastics',
+    trackLabel: 'Stochastics',
+    index: 2,
+    title: 'The Kalman Filter',
+    description: 'Optimal linear belief under Gaussian noise',
+    coreIdea: 'The Kalman filter is recursive Bayesian inference for linear-Gaussian state-space models — predict, observe, Kalman-gain-weighted correction.',
+    mbdBridge: 'MBD\'s baseline update B(t+1) = B(t) + λ(I − B(t)) is the scalar-constant-gain special case of a Kalman filter with fixed signal-to-noise ratio.',
+    llmHook: 'Mamba and S4 are continuous-time linear state-space models — Kalman filtering with learned dynamics replacing quadratic attention.',
+    component: React.lazy(() => import('../lessons/stochastics/Lesson5_2')),
+  },
+  {
+    id: 'stochastics-5-3',
+    track: 'stochastics',
+    trackLabel: 'Stochastics',
+    index: 3,
+    title: 'Brownian Motion & Itô Calculus',
+    description: 'Differentiating the non-differentiable',
+    coreIdea: 'Brownian motion is nowhere differentiable but has quadratic variation t, giving rise to the Itô correction (dB_t)² = dt.',
+    mbdBridge: 'Stochastic baselines dB(t) = λ(I−B)dt + σdW_t allow baselines to wander: a noisy mind is mathematically required for exploration.',
+    llmHook: 'Every diffusion model\'s forward process is an SDE; every reverse-time sample trajectory is an Itô integral.',
+    component: React.lazy(() => import('../lessons/stochastics/Lesson5_3')),
+  },
+  {
+    id: 'stochastics-5-4',
+    track: 'stochastics',
+    trackLabel: 'Stochastics',
+    index: 4,
+    title: 'Langevin Dynamics',
+    description: 'Gradient descent plus thermal noise',
+    coreIdea: 'dX = −∇U(X)dt + √(2/β) dW samples the Gibbs distribution p(x) ∝ e^{−β U(x)} as t → ∞. Gradient descent is Langevin at β = ∞.',
+    mbdBridge: 'A finite-temperature MBD mind explores baseline space ergodically, not just optimally — creativity requires β < ∞.',
+    llmHook: 'Stochastic Gradient Langevin Dynamics (SGLD) is Bayesian deep learning; every SGD step at finite batch size is approximately Langevin.',
+    component: React.lazy(() => import('../lessons/stochastics/Lesson5_4')),
+  },
+  {
+    id: 'stochastics-5-5',
+    track: 'stochastics',
+    trackLabel: 'Stochastics',
+    index: 5,
+    title: 'Score Matching',
+    description: '∇ log p(x) without knowing p(x)',
+    coreIdea: 'The score ∇ₓ log p(x) can be learned without computing the partition function, via denoising or sliced score matching.',
+    mbdBridge: 'The MBD pull term λ(I−B) is a score — the gradient of the log-density of a Gaussian prior centered at the ideal I.',
+    llmHook: 'Score matching IS the training objective of diffusion LLMs and all modern diffusion image models.',
+    component: React.lazy(() => import('../lessons/stochastics/Lesson5_5')),
+  },
+  {
+    id: 'stochastics-5-6',
+    track: 'stochastics',
+    trackLabel: 'Stochastics',
+    index: 6,
+    title: 'Reverse-Time Diffusion',
+    description: 'Anderson\'s theorem: noise → signal',
+    coreIdea: 'Anderson (1982) showed every forward SDE has a reverse SDE that denoises. The reverse drift is forward drift minus score ∇log p_t.',
+    mbdBridge: 'MBD relaxation toward I is the reverse-time process of a baseline that diffused outward; memory is a denoising trajectory.',
+    llmHook: 'The exact mathematical foundation of Stable Diffusion, DALL·E, Sora, and diffusion-language-model sampling.',
+    component: React.lazy(() => import('../lessons/stochastics/Lesson5_6')),
+  },
+
+  // ─────────────────────────────────────────────────────────────────
+  // TRACK 6 — SIGNAL & SPECTRUM: Hilbert spaces, kernels, RoPE
+  // ─────────────────────────────────────────────────────────────────
+  {
+    id: 'signal-6-1',
+    track: 'signal',
+    trackLabel: 'Signal & Spectrum',
+    index: 1,
+    title: 'Hilbert Spaces & Inner Products',
+    description: 'Geometry in infinite dimensions',
+    coreIdea: 'A Hilbert space is a complete inner-product space: every Cauchy sequence converges. It extends Euclidean geometry to function spaces.',
+    mbdBridge: 'The space of possible baselines B(·) is a Hilbert space L²; the pull term is an L²-projection onto the ideal.',
+    llmHook: 'Embedding spaces ARE Hilbert spaces; cosine similarity IS the inner product; attention is a projection operator.',
+    component: React.lazy(() => import('../lessons/signal/Lesson6_1')),
+  },
+  {
+    id: 'signal-6-2',
+    track: 'signal',
+    trackLabel: 'Signal & Spectrum',
+    index: 2,
+    title: 'Fourier Decomposition',
+    description: 'Every function is a sum of rotations',
+    coreIdea: 'The Fourier transform decomposes f ∈ L²(ℝ) into orthogonal frequency components: f(x) = ∫ f̂(ξ) e^{2πiξx} dξ.',
+    mbdBridge: 'Periodic perturbations on MBD dynamics decompose into frequency responses — the baseline acts as a low-pass filter.',
+    llmHook: 'Fourier features are the mathematical ancestor of RoPE and all sinusoidal position encodings.',
+    component: React.lazy(() => import('../lessons/signal/Lesson6_2')),
+  },
+  {
+    id: 'signal-6-3',
+    track: 'signal',
+    trackLabel: 'Signal & Spectrum',
+    index: 3,
+    title: 'Rotary Positional Embeddings',
+    description: 'Position as rotation in complex pairs',
+    coreIdea: 'RoPE rotates each query/key pair in ℝ² by an angle proportional to position — so that q(m)·k(n) depends only on m−n.',
+    mbdBridge: 'Relative time in MBD is what matters for coupling: a rotation-based encoding makes dynamics translation-equivariant.',
+    llmHook: 'RoPE is used in Llama, Mistral, Qwen, DeepSeek — the dominant position encoding in modern open-weight LLMs.',
+    component: React.lazy(() => import('../lessons/signal/Lesson6_3')),
+  },
+  {
+    id: 'signal-6-4',
+    track: 'signal',
+    trackLabel: 'Signal & Spectrum',
+    index: 4,
+    title: 'Kernels & RKHS',
+    description: 'Similarity functions that are secretly inner products',
+    coreIdea: 'A positive-definite kernel k(x,y) induces a Reproducing Kernel Hilbert Space where k(x,·) is the evaluation functional at x.',
+    mbdBridge: 'The coupling K between baselines is a kernel on baseline-space; the RKHS is the space of all possible cognitive states.',
+    llmHook: 'Attention softmax(QKᵀ/√d)V is a kernel smoother: the softmax is a normalized Gaussian-ish kernel over queries.',
+    component: React.lazy(() => import('../lessons/signal/Lesson6_4')),
+  },
+  {
+    id: 'signal-6-5',
+    track: 'signal',
+    trackLabel: 'Signal & Spectrum',
+    index: 5,
+    title: 'Gaussian Processes',
+    description: 'Distributions over functions',
+    coreIdea: 'A GP is a distribution over functions such that any finite collection {f(x₁),…,f(xₙ)} is jointly Gaussian with covariance k(xᵢ,xⱼ).',
+    mbdBridge: 'The uncertainty field over baselines is a GP; observed experiences collapse posterior variance locally.',
+    llmHook: 'The Neural Tangent Kernel shows infinitely-wide networks ARE Gaussian Processes during training.',
+    component: React.lazy(() => import('../lessons/signal/Lesson6_5')),
+  },
+  {
+    id: 'signal-6-6',
+    track: 'signal',
+    trackLabel: 'Signal & Spectrum',
+    index: 6,
+    title: 'Spectral Graph Theory',
+    description: 'The Laplacian eigenvalues tell you everything',
+    coreIdea: 'The graph Laplacian L = D − A has eigenvalues 0 = λ₀ ≤ λ₁ ≤ …; λ₁ (Fiedler) measures connectivity, λ_max measures bipartiteness.',
+    mbdBridge: 'A social fabric simulator graph\'s Laplacian spectrum reveals which agents are tightly coupled vs. bridge nodes.',
+    llmHook: 'Graph transformers use Laplacian eigenvectors as positional encodings for non-sequential data.',
+    component: React.lazy(() => import('../lessons/signal/Lesson6_6')),
+  },
+
+  // ─────────────────────────────────────────────────────────────────
+  // TRACK 7 — INFORMATION GEOMETRY: Fisher, natural gradient, OT
+  // ─────────────────────────────────────────────────────────────────
+  {
+    id: 'infogeo-7-1',
+    track: 'infogeo',
+    trackLabel: 'Information Geometry',
+    index: 1,
+    title: 'Statistical Manifolds',
+    description: 'Distributions as points on a curved manifold',
+    coreIdea: 'A parameterized family {p_θ} is a manifold with θ as local coordinates; distance between distributions is NOT Euclidean distance in θ.',
+    mbdBridge: 'The space of possible MBD baselines is a statistical manifold; its curvature determines how "steep" it is to shift identity.',
+    llmHook: 'Every softmax output layer maps to a point on the probability simplex — a statistical manifold with hyperbolic-like geometry near boundaries.',
+    component: React.lazy(() => import('../lessons/infogeo/Lesson7_1')),
+  },
+  {
+    id: 'infogeo-7-2',
+    track: 'infogeo',
+    trackLabel: 'Information Geometry',
+    index: 2,
+    title: 'The Fisher Information Metric',
+    description: 'The unique invariant Riemannian metric on distributions',
+    coreIdea: 'Fisher information I(θ)ᵢⱼ = 𝔼[∂ᵢ log p · ∂ⱼ log p] is the unique metric (up to scale) invariant under reparameterization. Čencov\'s theorem.',
+    mbdBridge: 'The sensitivity of the baseline\'s log-likelihood to its parameters IS the Fisher metric — it tells MBD how far a step really is.',
+    llmHook: 'Fisher information determines natural gradient, Elastic Weight Consolidation, K-FAC, and second-order optimizers.',
+    component: React.lazy(() => import('../lessons/infogeo/Lesson7_2')),
+  },
+  {
+    id: 'infogeo-7-3',
+    track: 'infogeo',
+    trackLabel: 'Information Geometry',
+    index: 3,
+    title: 'KL Divergence as a Geodesic',
+    description: 'Asymmetric, but geometrically meaningful',
+    coreIdea: 'KL(p‖q) is not a metric, but near p ≈ q it equals ½ Fisher-distance². Exponential and mixture families give dual affine connections.',
+    mbdBridge: 'MBD update minimizes KL from posterior to a constrained family — the update is a projection in dual-flat geometry.',
+    llmHook: 'KL penalties in RLHF (PPO, DPO) pull the policy geodesically toward the reference model — NOT Euclideanly.',
+    component: React.lazy(() => import('../lessons/infogeo/Lesson7_3')),
+  },
+  {
+    id: 'infogeo-7-4',
+    track: 'infogeo',
+    trackLabel: 'Information Geometry',
+    index: 4,
+    title: 'Exponential Families',
+    description: 'The flat coordinate system of statistics',
+    coreIdea: 'p(x|θ) = h(x) exp(θᵀT(x) − A(θ)). The log-partition A(θ) is convex; its gradient gives the mean parameters η = ∇A(θ).',
+    mbdBridge: 'The baseline distribution, if Gaussian-like, lies in an exponential family; MBD updates correspond to natural-parameter updates.',
+    llmHook: 'Softmax output layers ARE exponential families; logits are natural parameters, probabilities are mean parameters, cross-entropy is Bregman divergence.',
+    component: React.lazy(() => import('../lessons/infogeo/Lesson7_4')),
+  },
+  {
+    id: 'infogeo-7-5',
+    track: 'infogeo',
+    trackLabel: 'Information Geometry',
+    index: 5,
+    title: 'Optimal Transport & Wasserstein',
+    description: 'How much work to move one distribution onto another',
+    coreIdea: 'W_p(μ,ν) = (inf_γ ∫ ‖x−y‖^p dγ)^{1/p} over couplings γ with marginals μ,ν. Kantorovich-Rubinstein duality gives W₁ as a Lipschitz-function sup.',
+    mbdBridge: 'Baseline drift under MBD minimizes a Wasserstein-like cost between B(t) and B(t+1) — the mind moves as little mass as possible.',
+    llmHook: 'Flow matching (Rectified Flow, Stable Diffusion 3) trains models to interpolate along W₂-geodesics between noise and data.',
+    component: React.lazy(() => import('../lessons/infogeo/Lesson7_5')),
+  },
+  {
+    id: 'infogeo-7-6',
+    track: 'infogeo',
+    trackLabel: 'Information Geometry',
+    index: 6,
+    title: 'Sinkhorn & Entropic OT',
+    description: 'Softening transport with entropy regularization',
+    coreIdea: 'Adding εH(γ) regularization to OT makes the optimum unique and computable by matrix scaling: K = exp(−C/ε), then alternate row/col normalize.',
+    mbdBridge: 'Soft alignment between current and ideal baseline is entropic OT — the ε parameter is the temperature of identity resolution.',
+    llmHook: 'Sinkhorn attention variants, softmax itself as 1D Sinkhorn, and the entire Flash-Sinkhorn literature.',
+    component: React.lazy(() => import('../lessons/infogeo/Lesson7_6')),
+  },
+
+  // ─────────────────────────────────────────────────────────────────
+  // TRACK 8 — SCALING & CHAOS: fractals, RMT, power laws
+  // ─────────────────────────────────────────────────────────────────
+  {
+    id: 'scaling-8-1',
+    track: 'scaling',
+    trackLabel: 'Scaling & Chaos',
+    index: 1,
+    title: 'Self-Similarity & Hausdorff Dimension',
+    description: 'Non-integer dimension as a scaling exponent',
+    coreIdea: 'dim_H(S) = lim log N(ε) / log(1/ε). The Cantor set has dimension log 2 / log 3 ≈ 0.631 — between point and line.',
+    mbdBridge: 'Memory recall patterns show multifractal scaling: the MBD baseline\'s attractor is not smooth.',
+    llmHook: 'Loss landscapes of trained networks have fractal structure; scaling laws L(N) ∝ N^{−α} encode this geometry.',
+    component: React.lazy(() => import('../lessons/scaling/Lesson8_1')),
+  },
+  {
+    id: 'scaling-8-2',
+    track: 'scaling',
+    trackLabel: 'Scaling & Chaos',
+    index: 2,
+    title: 'Power Laws & Heavy Tails',
+    description: 'When the mean is infinite',
+    coreIdea: 'p(x) ∝ x^{−α}. For α ≤ 2 the variance is infinite; for α ≤ 1 the mean is. CLT fails; Lévy-stable limits take over.',
+    mbdBridge: 'Perturbation magnitudes in real life are heavy-tailed — MBD must be robust to α-stable impulses, not Gaussian.',
+    llmHook: 'Kaplan and Chinchilla scaling laws: loss vs. compute is a power law. Token frequency (Zipf) is a power law. Attention entropy too.',
+    component: React.lazy(() => import('../lessons/scaling/Lesson8_2')),
+  },
+  {
+    id: 'scaling-8-3',
+    track: 'scaling',
+    trackLabel: 'Scaling & Chaos',
+    index: 3,
+    title: 'Wigner Semicircle Law',
+    description: 'The spectrum of a random symmetric matrix',
+    coreIdea: 'For an n×n symmetric matrix with iid entries (variance σ²/n), eigenvalues are distributed as ρ(λ) = (2πσ²)⁻¹√(4σ² − λ²) on [−2σ, 2σ].',
+    mbdBridge: 'A random coupling matrix between baselines has predictable spectral radius — large networks self-stabilize spectrally.',
+    llmHook: 'Transformer weight initialization (Xavier, He) is chosen so forward-pass Hessian spectrum stays near Wigner — edge of stability.',
+    component: React.lazy(() => import('../lessons/scaling/Lesson8_3')),
+  },
+  {
+    id: 'scaling-8-4',
+    track: 'scaling',
+    trackLabel: 'Scaling & Chaos',
+    index: 4,
+    title: 'Marchenko–Pastur Law',
+    description: 'The spectrum of a random covariance matrix',
+    coreIdea: 'For X ∈ ℝ^{n×p} iid with n,p → ∞, p/n → q ∈ (0,1], the eigenvalue density of XᵀX/n is the MP distribution with edges (1±√q)².',
+    mbdBridge: 'Empirical covariance of baseline observations has a bulk (noise) and spikes (signal) — MP tells us where the separation lies.',
+    llmHook: 'Activation covariance matrices in deep nets follow MP bulks with heavy-tail spike corrections — see Pennington-Worah, Mahoney.',
+    component: React.lazy(() => import('../lessons/scaling/Lesson8_4')),
+  },
+  {
+    id: 'scaling-8-5',
+    track: 'scaling',
+    trackLabel: 'Scaling & Chaos',
+    index: 5,
+    title: 'Lyapunov Exponents',
+    description: 'Quantifying sensitivity to initial conditions',
+    coreIdea: 'λ = lim_{t→∞} (1/t) log ‖δx(t)‖/‖δx(0)‖. Positive λ means chaos: exponential separation of nearby trajectories.',
+    mbdBridge: 'MBD dynamics with coupling > critical value have positive Lyapunov exponents — small perturbations amplify into identity shifts.',
+    llmHook: 'RNN training stability hinges on keeping Lyapunov exponents near zero (edge of chaos). Transformers bypass this via residual streams.',
+    component: React.lazy(() => import('../lessons/scaling/Lesson8_5')),
+  },
+  {
+    id: 'scaling-8-6',
+    track: 'scaling',
+    trackLabel: 'Scaling & Chaos',
+    index: 6,
+    title: 'The Neural Tangent Kernel',
+    description: 'Infinitely wide networks are kernel machines',
+    coreIdea: 'As width → ∞, the gradient flow of a neural net is kernel gradient descent with kernel Θ(x,x\') = 𝔼[∇_θ f(x)·∇_θ f(x\')] that is CONSTANT during training.',
+    mbdBridge: 'In the NTK limit, MBD over an infinitely-wide baseline network becomes linear filtering against a fixed kernel.',
+    llmHook: 'NTK explains why large networks train stably; breaks in finite-width regime where feature learning occurs (μP, Tensor Programs).',
+    component: React.lazy(() => import('../lessons/scaling/Lesson8_6')),
+  },
+
+  // ─────────────────────────────────────────────────────────────────
+  // TRACK 9 — LLM INFRASTRUCTURE: the math inside a transformer
+  // ─────────────────────────────────────────────────────────────────
+  {
+    id: 'llminfra-9-1',
+    track: 'llminfra',
+    trackLabel: 'LLM Infrastructure',
+    index: 1,
+    title: 'Attention as Kernel Smoothing',
+    description: 'softmax(QKᵀ/√d)V decoded geometrically',
+    coreIdea: 'Attention is a Nadaraya-Watson estimator: output(q) = Σ w(q,kᵢ) vᵢ where w is a normalized exponential kernel in query-key space.',
+    mbdBridge: 'Every MBD state is a kernel-weighted mixture of remembered ones; attention IS memory retrieval as convex combination.',
+    llmHook: 'This IS the core of every transformer. Multi-head = multiple kernels. Flash-attention = clever IO for the same math.',
+    component: React.lazy(() => import('../lessons/llminfra/Lesson9_1')),
+  },
+  {
+    id: 'llminfra-9-2',
+    track: 'llminfra',
+    trackLabel: 'LLM Infrastructure',
+    index: 2,
+    title: 'Softmax Geometry & Temperature',
+    description: 'The log-sum-exp sphere',
+    coreIdea: 'Softmax maps ℝⁿ to the open simplex Δⁿ⁻¹ bijectively up to constant shifts. Temperature scales the map\'s sharpness; β → ∞ gives argmax.',
+    mbdBridge: 'MBD\'s convex-combination update is softmax-temperature = 1; cold temperatures give rigid attractors, hot give fluid mind.',
+    llmHook: 'Sampling temperature, top-k/top-p, logit scaling, mixture-of-experts routing — all live on softmax geometry.',
+    component: React.lazy(() => import('../lessons/llminfra/Lesson9_2')),
+  },
+  {
+    id: 'llminfra-9-3',
+    track: 'llminfra',
+    trackLabel: 'LLM Infrastructure',
+    index: 3,
+    title: 'Layer Norm & Residual Streams',
+    description: 'Why transformers are actually ODE solvers',
+    coreIdea: 'x_{ℓ+1} = x_ℓ + f_ℓ(LN(x_ℓ)) is Euler\'s method for dx/dℓ = f(x); LN projects to the unit sphere before every update.',
+    mbdBridge: 'The residual stream IS a baseline; each layer is an MBD update pulling toward a learned ideal in normalized space.',
+    llmHook: 'Neural ODE interpretation: transformer depth ≈ integration time. Explains why very deep residual nets are stable.',
+    component: React.lazy(() => import('../lessons/llminfra/Lesson9_3')),
+  },
+  {
+    id: 'llminfra-9-4',
+    track: 'llminfra',
+    trackLabel: 'LLM Infrastructure',
+    index: 4,
+    title: 'Measure Concentration',
+    description: 'High dimensions are surprisingly flat',
+    coreIdea: 'Lipschitz functions on the n-sphere concentrate exponentially: P(|f − 𝔼f| > t) ≤ 2e^{−nt²/(2L²)}. Most of high-dim space is "equatorial."',
+    mbdBridge: 'A high-dim MBD baseline is automatically robust: Lipschitz perturbations have vanishingly small effect per dimension.',
+    llmHook: 'Why embeddings work at all. Why dropout regularizes. Why random initialization\'s outputs are nearly constant.',
+    component: React.lazy(() => import('../lessons/llminfra/Lesson9_4')),
+  },
+  {
+    id: 'llminfra-9-5',
+    track: 'llminfra',
+    trackLabel: 'LLM Infrastructure',
+    index: 5,
+    title: 'Tropical Geometry of ReLU Nets',
+    description: 'Piecewise-linear expressivity counts regions',
+    coreIdea: 'A ReLU network is a tropical rational function — max-plus algebra. Its decision regions form a polyhedral complex whose cell count is the expressivity.',
+    mbdBridge: 'A piecewise-linear baseline can have up to 2^{depth·width} cognitive regimes — far more than parameter count suggests.',
+    llmHook: 'Tropical geometry explains ReLU MLP expressivity, upper-bounds GELU activations, informs pruning via cell-counting.',
+    component: React.lazy(() => import('../lessons/llminfra/Lesson9_5')),
+  },
+  {
+    id: 'llminfra-9-6',
+    track: 'llminfra',
+    trackLabel: 'LLM Infrastructure',
+    index: 6,
+    title: 'Scaling Laws as Critical Phenomena',
+    description: 'Loss ∝ compute^{−α} is a phase transition',
+    coreIdea: 'Kaplan-Chinchilla power laws L(N,D,C) = L∞ + (N_c/N)^{αN} + (D_c/D)^{αD} resemble critical exponents of a 2nd-order phase transition.',
+    mbdBridge: 'Increasing baseline-space dimension past a critical threshold yields qualitatively new cognitive capabilities — emergence as criticality.',
+    llmHook: 'The empirical backbone of modern LLM training: Chinchilla-optimal ratios, compute-optimal scaling, emergence thresholds.',
+    component: React.lazy(() => import('../lessons/llminfra/Lesson9_6')),
+  },
+];
+
+```
+
+## Track: calculus
+
+### Lesson Component: Lesson4_1.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import TangentLine from '../../viz/2d/TangentLine';
+
+export default function Lesson4_1() {
+  return (
+    <LessonShell lessonId="calculus-4-1">
+      <div className="space-y-6">
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          Derivatives are linear approximations.
+        </p>
+        <div className="py-8">
+          <TangentLine />
+        </div>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson4_2.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import PhasePortrait from '../../viz/2d/PhasePortrait';
+
+export default function Lesson4_2() {
+  return (
+    <LessonShell lessonId="calculus-4-2">
+      <div className="space-y-6">
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          Flow lines in a vector field.
+        </p>
+        <div className="py-8">
+          <PhasePortrait />
+        </div>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson4_3.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import NaturalGradient from '../../viz/2d/NaturalGradient';
+
+export default function Lesson4_3() {
+  return (
+    <LessonShell lessonId="calculus-4-3">
+      <div className="space-y-6">
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          The Natural Gradient.
+        </p>
+        <div className="py-8">
+          <NaturalGradient />
+        </div>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+## Track: infogeo
+
+### Lesson Component: Lesson7_1.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import StatManifoldViz from '../../viz/2d/StatManifoldViz';
+
+export default function Lesson7_1() {
+  return (
+    <LessonShell lessonId="infogeo-7-1">
+      <div className="space-y-6">
+        <P>
+          A parametric family <InlineMath math="\{p_\theta : \theta \in \Theta\}" /> is a geometric
+          object: <InlineMath math="\Theta" /> is a manifold, each{' '}
+          <InlineMath math="\theta" /> is a chart, and each distribution is a point on that
+          manifold. The distance between two distributions is <em>not</em> Euclidean in{' '}
+          <InlineMath math="\theta" /> — the correct metric is Fisher, and the geometry it induces
+          is genuinely curved.
+        </P>
+
+        <Def title="Statistical manifold">
+          A smooth manifold <InlineMath math="\mathcal{M}" /> with a bijection{' '}
+          <InlineMath math="\theta \mapsto p_\theta" /> to a family of probability distributions
+          on a sample space <InlineMath math="\mathcal{X}" />, such that{' '}
+          <InlineMath math="\theta \mapsto \log p_\theta(x)" /> is smooth for (almost) every{' '}
+          <InlineMath math="x" />.
+        </Def>
+
+        <P>
+          The canonical example is the Gaussian family parameterized by{' '}
+          <InlineMath math="(\mu, \sigma)" /> (or <InlineMath math="(\mu, \log \sigma)" />). The
+          resulting 2-manifold is the upper half-plane equipped with the hyperbolic metric — a space
+          of <em>negative curvature</em>. Two Gaussians far apart in Fisher distance may be close in{' '}
+          <InlineMath math="(\mu, \sigma)" /> coordinates, and vice versa.
+        </P>
+
+        <div className="py-2"><StatManifoldViz /></div>
+
+        <Thm
+          title="Pythagorean Theorem for KL (Amari)"
+          proof={
+            <>
+              KL = Bregman divergence of the log-partition <InlineMath math="A(\theta)" />. A KL
+              analog of Pythagoras holds between dual-flat connections <InlineMath math="\nabla^{(e)}" /> and{' '}
+              <InlineMath math="\nabla^{(m)}" />: if <InlineMath math="q" /> lies on the{' '}
+              <InlineMath math="e" />-geodesic through <InlineMath math="p_0" /> and{' '}
+              <InlineMath math="r" /> lies on the <InlineMath math="m" />-geodesic through{' '}
+              <InlineMath math="q" /> meeting orthogonally, then{' '}
+              <InlineMath math="D(p\|r) = D(p\|q) + D(q\|r)" />.
+            </>
+          }
+        >
+          In exponential-family statistical manifolds with dually-flat connections, orthogonal
+          projection obeys a Pythagorean law for KL divergence:
+          <BlockMath math="D(p \| r) = D(p \| q) + D(q \| r)" />
+          when <InlineMath math="q" /> is the <em>information projection</em> of{' '}
+          <InlineMath math="p" /> onto a submanifold containing <InlineMath math="r" />.
+        </Thm>
+
+        <P>
+          This is the beginning of <strong>information geometry</strong>: distributions form a
+          manifold, and the choice of metric/connection turns statistical problems into geometric
+          ones. Variational inference, mirror descent, and natural gradient all live here.
+        </P>
+
+        <Practice>
+          Every softmax output layer maps logits <InlineMath math="z \in \mathbb{R}^{|V|}" /> onto
+          the probability simplex — a statistical manifold with its own Fisher geometry. The
+          log-likelihood loss is a Bregman divergence on this manifold. Dropout, label smoothing,
+          and temperature all edit where on this manifold training lives.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson7_2.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import FisherViz from '../../viz/2d/FisherViz';
+
+export default function Lesson7_2() {
+  return (
+    <LessonShell lessonId="infogeo-7-2">
+      <div className="space-y-6">
+        <P>
+          A metric on a statistical manifold must be invariant under reparameterization — changing
+          coordinates shouldn't change what's actually measured. Čencov (1982) proved there is,
+          up to scale, a <em>unique</em> such metric: the Fisher information.
+        </P>
+
+        <Def title="Fisher information metric">
+          <BlockMath math="g_{ij}(\theta) = \mathbb{E}_{p_\theta}\!\Big[\,\partial_i \log p_\theta(X) \cdot \partial_j \log p_\theta(X)\,\Big]" />
+          Equivalently <InlineMath math="g_{ij} = -\mathbb{E}[\partial_i \partial_j \log p_\theta]" />{' '}
+          (regularity). This defines a Riemannian metric on <InlineMath math="\Theta" />.
+        </Def>
+
+        <Thm
+          title="Čencov Uniqueness"
+          proof={
+            <>
+              Any metric on the simplex that is invariant under Markov morphisms (sufficient
+              statistics should not change geometry) must be a constant multiple of the Fisher
+              metric. The proof uses a clever symmetric group action and the fact that the Fisher
+              metric is the unique fixed point up to scale.
+            </>
+          }
+        >
+          On the simplex <InlineMath math="\Delta^{n-1}" />, the Fisher metric{' '}
+          <InlineMath math="g_{ij} = \delta_{ij}/p_i" /> is the unique Riemannian metric (up to
+          constant scaling) invariant under sufficient statistics.
+        </Thm>
+
+        <div className="py-2"><FisherViz /></div>
+
+        <Thm title="Cramér–Rao Bound">
+          For any unbiased estimator <InlineMath math="\hat\theta" /> of <InlineMath math="\theta" />:
+          <BlockMath math="\mathrm{Cov}(\hat\theta) \succeq I(\theta)^{-1}" />
+          The inverse Fisher is the fundamental lower bound on estimator variance. In the large-n
+          limit, the MLE achieves it.
+        </Thm>
+
+        <P>
+          Geometrically, the Fisher unit ball is the set of directions{' '}
+          <InlineMath math="d\theta" /> that take you one KL-bit away from{' '}
+          <InlineMath math="\theta" />:{' '}
+          <InlineMath math="\mathrm{KL}(p_\theta \| p_{\theta + d\theta}) \approx \tfrac12 d\theta^\top I(\theta) d\theta" />.
+          Steeper Fisher = smaller unit ball = more sensitive parameter = harder to estimate.
+        </P>
+
+        <Practice>
+          Fisher information drives:{' '}
+          <strong>natural gradient</strong> <InlineMath math="\tilde \nabla = F^{-1} \nabla" />{' '}
+          (next lesson), <strong>Elastic Weight Consolidation</strong> for continual learning
+          (penalize changes weighted by Fisher), <strong>K-FAC / Shampoo</strong> second-order
+          optimizers (block-diagonal Fisher approximations), <strong>TRPO / PPO</strong> policy
+          gradients (Fisher-bound KL trust regions), and <strong>Laplace approximation</strong> of
+          Bayesian posteriors.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson7_3.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import KLViz from '../../viz/2d/KLViz';
+
+export default function Lesson7_3() {
+  return (
+    <LessonShell lessonId="infogeo-7-3">
+      <div className="space-y-6">
+        <P>
+          KL divergence <InlineMath math="D(p \| q)" /> is asymmetric and not a true distance — yet
+          it is the central object of information theory, variational inference, and RL. It is{' '}
+          <em>locally</em> a Riemannian distance (Fisher) and <em>globally</em> a Bregman divergence.
+          The asymmetry is the feature, not the bug.
+        </P>
+
+        <Def title="KL Divergence">
+          <BlockMath math="D(p \| q) = \int p(x) \log \frac{p(x)}{q(x)} dx = \mathbb{E}_p[\log p - \log q]." />
+          Non-negative (Gibbs), zero iff <InlineMath math="p = q" />, but{' '}
+          <InlineMath math="D(p\|q) \ne D(q\|p)" /> and no triangle inequality.
+        </Def>
+
+        <Thm
+          title="Local Equivalence to Fisher-Distance²"
+          proof={
+            <>
+              Taylor-expand <InlineMath math="D(p_\theta \| p_{\theta + d\theta})" /> in{' '}
+              <InlineMath math="d\theta" />. First-order term vanishes (score has mean 0);
+              second-order term is <InlineMath math="\tfrac12 d\theta^\top I(\theta) d\theta" />.
+            </>
+          }
+        >
+          <BlockMath math="D(p_\theta \| p_{\theta + d\theta}) = \tfrac12 d\theta^\top I(\theta) d\theta + O(\|d\theta\|^3)." />
+          In the infinitesimal limit, KL divergence is half the squared Fisher distance.
+        </Thm>
+
+        <div className="py-2"><KLViz /></div>
+
+        <Thm title="Forward vs Reverse KL — Mode-Covering vs Mode-Seeking">
+          Minimizing <InlineMath math="D(p \| q_\phi)" /> over <InlineMath math="\phi" /> forces{' '}
+          <InlineMath math="q_\phi" /> to cover all of <InlineMath math="p" />'s support
+          (<em>mean-seeking</em>, moment-matching). Minimizing <InlineMath math="D(q_\phi \| p)" />{' '}
+          forces <InlineMath math="q_\phi" /> to stay inside <InlineMath math="p" />'s support
+          (<em>mode-seeking</em>). The choice matters enormously.
+        </Thm>
+
+        <P>
+          In variational inference the ELBO maximizes{' '}
+          <InlineMath math="-D(q_\phi \| p(\cdot | x))" /> — reverse KL, hence mode-seeking. In
+          maximum-likelihood training, we minimize{' '}
+          <InlineMath math="D(p_{\text{data}} \| p_\theta)" /> — forward KL, hence mode-covering.
+          This is why generative MLE trains cover all data, but VAEs' approximate posteriors collapse
+          to single modes.
+        </P>
+
+        <Practice>
+          RLHF loss is penalized KL:
+          <BlockMath math="\max_\pi \mathbb{E}_\pi[r(x)] - \beta\, D(\pi \| \pi_{\text{ref}})." />
+          The <InlineMath math="\beta" /> parameter is a trust-region size measured in KL — the
+          policy may move a geodesic-distance of ~<InlineMath math="\sqrt{2/\beta}" /> from the
+          reference. This is directly a Fisher-geometric constraint. DPO reformulates this as a
+          log-likelihood problem without needing an explicit reward model.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson7_4.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import ExpFamilyViz from '../../viz/2d/ExpFamilyViz';
+
+export default function Lesson7_4() {
+  return (
+    <LessonShell lessonId="infogeo-7-4">
+      <div className="space-y-6">
+        <P>
+          Exponential families are the "flat" coordinates of information geometry. Gaussians,
+          categoricals, Poissons, exponentials, Dirichlet, Wishart — a vast zoo share one unified
+          algebraic form. Softmax classifiers are literally their parameterization.
+        </P>
+
+        <Def title="Exponential family">
+          <BlockMath math="p(x \mid \theta) = h(x) \exp\!\big(\theta^\top T(x) - A(\theta)\big)" />
+          where <InlineMath math="T(x)" /> is the sufficient statistic, <InlineMath math="\theta" />{' '}
+          is the natural parameter, <InlineMath math="h" /> is a base measure, and the{' '}
+          <em>log-partition</em> <InlineMath math="A(\theta) = \log \int h(x) e^{\theta^\top T(x)} dx" />{' '}
+          normalizes.
+        </Def>
+
+        <Thm
+          title="Log-Partition is Convex"
+          proof={
+            <>
+              Differentiate under the integral:{' '}
+              <InlineMath math="\nabla A(\theta) = \mathbb{E}_\theta[T(X)]" />,{' '}
+              <InlineMath math="\nabla^2 A(\theta) = \mathrm{Cov}_\theta[T(X)] \succeq 0" />. A PSD
+              Hessian means <InlineMath math="A" /> is convex; the Fisher info equals the Hessian.
+            </>
+          }
+        >
+          <InlineMath math="A(\theta)" /> is convex in <InlineMath math="\theta" />. Its gradient
+          and Hessian satisfy
+          <BlockMath math="\nabla A(\theta) = \mathbb{E}_\theta[T(X)] =: \eta, \quad \nabla^2 A(\theta) = \mathrm{Cov}_\theta[T(X)] = I(\theta)." />
+          The Fisher information <em>is</em> the Hessian of the log-partition.
+        </Thm>
+
+        <Def title="Mean parameters (dual coordinates)">
+          The Legendre dual <InlineMath math="A^*(\eta) = \sup_\theta(\eta^\top \theta - A(\theta))" />{' '}
+          is convex; its domain is the convex hull of possible{' '}
+          <InlineMath math="T(x)" /> values. The pair <InlineMath math="(\theta, \eta)" /> is{' '}
+          <em>dually coupled</em> via <InlineMath math="\eta = \nabla A(\theta)" />,{' '}
+          <InlineMath math="\theta = \nabla A^*(\eta)" />.
+        </Def>
+
+        <div className="py-2"><ExpFamilyViz /></div>
+
+        <Thm title="KL = Bregman divergence of A">
+          For two exponential-family members with natural parameters{' '}
+          <InlineMath math="\theta_1, \theta_2" />:
+          <BlockMath math="D(p_{\theta_1} \| p_{\theta_2}) = A(\theta_2) - A(\theta_1) - (\theta_2 - \theta_1)^\top \nabla A(\theta_1)." />
+          This is the Bregman divergence of the convex function <InlineMath math="A" />.
+          Cross-entropy loss is this formula for the categorical family.
+        </Thm>
+
+        <Practice>
+          <strong>Softmax = natural-mean duality</strong>: logits are{' '}
+          <InlineMath math="\theta" />, probabilities are{' '}
+          <InlineMath math="\eta = \nabla A(\theta)" />. Cross-entropy loss is a Bregman divergence.
+          Mixture-of-Experts gating IS a conditional exponential family. Contrastive learning (InfoNCE,
+          SimCLR) can be derived as MLE on a conditional exp-fam with log-partition approximated via
+          negative samples. Noise-contrastive estimation (NCE) escapes the partition function the
+          same way.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson7_5.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import WassersteinViz from '../../viz/2d/WassersteinViz';
+
+export default function Lesson7_5() {
+  return (
+    <LessonShell lessonId="infogeo-7-5">
+      <div className="space-y-6">
+        <P>
+          Fisher/KL geometry compares distributions <em>pointwise</em>: it asks how likely one
+          density is under another. Optimal Transport asks a physically different question — how
+          much <em>work</em> does it take to rearrange one pile of probability mass into another?
+          The answer is a genuine metric, sensitive to ground geometry, finite even when supports
+          are disjoint. This is the geometry diffusion models live in.
+        </P>
+
+        <Def title="Kantorovich formulation">
+          For probability measures <InlineMath math="\mu, \nu" /> on a space{' '}
+          <InlineMath math="\mathcal{X}" /> with cost <InlineMath math="c(x, y)" />, the optimal
+          transport cost is
+          <BlockMath math="\mathcal{T}_c(\mu, \nu) = \inf_{\gamma \in \Pi(\mu, \nu)} \int_{\mathcal{X} \times \mathcal{X}} c(x, y)\, d\gamma(x, y)" />
+          where <InlineMath math="\Pi(\mu, \nu)" /> is the set of couplings with marginals{' '}
+          <InlineMath math="\mu" /> and <InlineMath math="\nu" />. Choosing{' '}
+          <InlineMath math="c(x, y) = \|x - y\|^p" /> gives the{' '}
+          <em>p-Wasserstein distance</em>{' '}
+          <InlineMath math="W_p(\mu, \nu) = \mathcal{T}_c^{1/p}" />.
+        </Def>
+
+        <Thm
+          title="Kantorovich–Rubinstein Duality"
+          proof={
+            <>
+              Lagrangian duality on the infinite-dimensional LP: primal feasibility{' '}
+              <InlineMath math="\gamma \in \Pi(\mu, \nu)" /> dualizes to potentials{' '}
+              <InlineMath math="\varphi, \psi" /> with{' '}
+              <InlineMath math="\varphi(x) + \psi(y) \le c(x, y)" />. For <InlineMath math="p=1" />{' '}
+              with Euclidean cost, optimal potentials satisfy{' '}
+              <InlineMath math="\psi = -\varphi" /> and <InlineMath math="\varphi" /> must be
+              1-Lipschitz; strong duality holds by Fenchel–Rockafellar.
+            </>
+          }
+        >
+          For <InlineMath math="p = 1" />,
+          <BlockMath math="W_1(\mu, \nu) = \sup_{\|\varphi\|_{\mathrm{Lip}} \le 1} \left( \int \varphi\, d\mu - \int \varphi\, d\nu \right)." />
+          The supremum is over all 1-Lipschitz test functions. This is exactly the objective
+          maximized by the critic in a Wasserstein GAN.
+        </Thm>
+
+        <Def title="Monge map (when it exists)">
+          If <InlineMath math="\mu" /> is absolutely continuous, Brenier's theorem guarantees a
+          unique transport map <InlineMath math="T: \mathcal{X} \to \mathcal{X}" /> with{' '}
+          <InlineMath math="T_\# \mu = \nu" /> that solves the quadratic OT problem; moreover{' '}
+          <InlineMath math="T = \nabla \varphi" /> for a convex potential{' '}
+          <InlineMath math="\varphi" />. Transport becomes a gradient field.
+        </Def>
+
+        <div className="py-2"><WassersteinViz /></div>
+
+        <Thm title="One-dimensional OT is quantile matching">
+          On <InlineMath math="\mathbb{R}" />, the optimal coupling between{' '}
+          <InlineMath math="\mu" /> and <InlineMath math="\nu" /> is given by their inverse CDFs:
+          <BlockMath math="W_p(\mu, \nu)^p = \int_0^1 \big| F_\mu^{-1}(u) - F_\nu^{-1}(u) \big|^p du." />
+          Sort the two clouds; pair the <InlineMath math="k" />-th source with the{' '}
+          <InlineMath math="k" />-th target. This is what the visualization above renders.
+        </Thm>
+
+        <Def title="Wasserstein geodesics (displacement interpolation)">
+          The curve <InlineMath math="\mu_t = \big( (1-t)\,\mathrm{id} + t\,T \big)_\# \mu" /> is
+          the <InlineMath math="W_2" />-geodesic from <InlineMath math="\mu" /> to{' '}
+          <InlineMath math="\nu" />. Mass moves in straight lines at constant speed. This is
+          exactly the "noise → data" path that flow-matching and rectified-flow models are
+          trained to trace.
+        </Def>
+
+        <Practice>
+          <strong>Flow matching</strong> (Stable Diffusion 3, Flux, Rectified Flow) regresses a
+          velocity field <InlineMath math="v_\theta(x, t)" /> onto the{' '}
+          <InlineMath math="W_2" />-geodesic from noise to data — the loss literally is
+          <InlineMath math="\mathbb{E} \|v_\theta(x_t, t) - (x_1 - x_0)\|^2" />, the
+          constant-speed displacement. <strong>WGAN</strong> critics estimate{' '}
+          <InlineMath math="W_1" /> via the Lipschitz dual. <strong>Sliced Wasserstein</strong>{' '}
+          averages 1D quantile distances over random projections — fast, and the backbone of
+          several generative-model evaluations (FID's cousin, SWD).
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson7_6.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import SinkhornViz from '../../viz/2d/SinkhornViz';
+
+export default function Lesson7_6() {
+  return (
+    <LessonShell lessonId="infogeo-7-6">
+      <div className="space-y-6">
+        <P>
+          Exact optimal transport is a linear program with <InlineMath math="n^2" /> variables
+          and two <InlineMath math="n" />-dimensional marginal constraints — beautiful, but
+          <InlineMath math="O(n^3 \log n)" /> and non-differentiable at the optimum. In 2013
+          Cuturi showed that one small change — a pinch of entropy — turns the problem into
+          matrix scaling: a parallel, GPU-friendly iteration that converges linearly and makes
+          the OT cost smoothly differentiable in the inputs. Sinkhorn is how OT became a layer.
+        </P>
+
+        <Def title="Entropy-regularized transport">
+          For a cost matrix <InlineMath math="C \in \mathbb{R}^{n \times m}" /> and marginals{' '}
+          <InlineMath math="a \in \Delta^n, b \in \Delta^m" />,
+          <BlockMath math="\mathcal{T}_\varepsilon(a, b) = \min_{P \in \Pi(a, b)} \langle P, C \rangle - \varepsilon H(P)" />
+          where <InlineMath math="H(P) = -\sum_{ij} P_{ij} (\log P_{ij} - 1)" /> is the Shannon
+          entropy of the plan. As <InlineMath math="\varepsilon \downarrow 0" /> the classical
+          OT solution is recovered; as <InlineMath math="\varepsilon \uparrow \infty" /> the
+          optimum is the independent coupling <InlineMath math="a b^\top" />.
+        </Def>
+
+        <Thm
+          title="Sinkhorn's theorem (matrix scaling form)"
+          proof={
+            <>
+              First-order conditions of the regularized Lagrangian give{' '}
+              <InlineMath math="P_{ij} = u_i K_{ij} v_j" /> with{' '}
+              <InlineMath math="K = e^{-C/\varepsilon}" />. Enforcing marginals yields two
+              fixed-point equations; alternating projection in KL geometry is Sinkhorn–Knopp,
+              which contracts in the Hilbert projective metric (Franklin–Lorenz, 1989).
+              Convergence is linear with rate depending on{' '}
+              <InlineMath math="\min_{ij} K_{ij}" />.
+            </>
+          }
+        >
+          The unique minimizer has the form
+          <BlockMath math="P^\star = \mathrm{diag}(u)\, K\, \mathrm{diag}(v), \qquad K_{ij} = e^{-C_{ij}/\varepsilon}," />
+          where scaling vectors <InlineMath math="u, v" /> are found by alternating the updates
+          <BlockMath math="u \leftarrow a \oslash (K v), \qquad v \leftarrow b \oslash (K^\top u)." />
+          Each half-step is an <InlineMath math="O(nm)" /> matrix-vector product — embarrassingly
+          parallel, fully differentiable.
+        </Thm>
+
+        <div className="py-2"><SinkhornViz /></div>
+
+        <Def title="Sinkhorn divergence">
+          The regularized cost <InlineMath math="\mathcal{T}_\varepsilon(a, b)" /> is biased: it
+          is not zero when <InlineMath math="a = b" />. The debiased{' '}
+          <em>Sinkhorn divergence</em>{' '}
+          <BlockMath math="S_\varepsilon(a, b) = \mathcal{T}_\varepsilon(a, b) - \tfrac{1}{2}\mathcal{T}_\varepsilon(a, a) - \tfrac{1}{2}\mathcal{T}_\varepsilon(b, b)" />
+          interpolates between OT (<InlineMath math="\varepsilon \to 0" />) and Maximum Mean
+          Discrepancy (<InlineMath math="\varepsilon \to \infty" />), and is positive, convex,
+          and metrizes weak convergence.
+        </Def>
+
+        <Thm title="Softmax is 1D Sinkhorn">
+          With a single row marginal and uniform column marginal, one Sinkhorn half-iteration is
+          exactly <InlineMath math="\mathrm{softmax}(-C / \varepsilon)" />. Temperature IS the
+          regularization parameter; attention is one Sinkhorn sweep.
+        </Thm>
+
+        <Practice>
+          <strong>Sinkhorn attention</strong> (Niculae, Martins, 2018; Sinkformers, 2021)
+          replaces softmax with <InlineMath math="k" /> Sinkhorn iterations to enforce both row
+          and column normalization — doubly-stochastic attention that is provably closer to a
+          transport plan. <strong>Optimal-transport tokenization</strong> and MoE routing (Shi
+          et al., S-BASE) use Sinkhorn to balance load across experts without auxiliary losses.
+          <strong>Diffusion model evaluation</strong> uses Sinkhorn divergence as an FID
+          alternative on small-sample regimes where the Fréchet assumption fails. Finally, every
+          modern OT library — POT, Geomloss, OTT-JAX — ships log-domain stabilized Sinkhorn as
+          its default solver.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+## Track: linearalgebra
+
+### Lesson Component: Lesson2_1.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import VectorField from '../../viz/2d/VectorField';
+
+export default function Lesson2_1() {
+  return (
+    <LessonShell lessonId="linearalgebra-2-1">
+      <div className="space-y-6">
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          Vectors are arrows. They point somewhere, and they have a length.
+        </p>
+        <div className="py-8">
+          <VectorField />
+        </div>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson2_2.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import EigenViz from '../../viz/2d/EigenViz';
+
+export default function Lesson2_2() {
+  return (
+    <LessonShell lessonId="linearalgebra-2-2">
+      <div className="space-y-6">
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          Transformations can warp space. Eigenvectors stay on their own span.
+        </p>
+        <div className="py-8">
+          <EigenViz />
+        </div>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson2_3.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import GradientField from '../../viz/2d/GradientField';
+
+export default function Lesson2_3() {
+  return (
+    <LessonShell lessonId="linearalgebra-2-3">
+      <div className="space-y-6">
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          The gradient calculates steepness. It's a covector.
+        </p>
+        <div className="py-8">
+          <GradientField />
+        </div>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+## Track: llminfra
+
+### Lesson Component: Lesson9_1.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import AttentionViz from '../../viz/2d/AttentionViz';
+
+export default function Lesson9_1() {
+  return (
+    <LessonShell lessonId="llminfra-9-1">
+      <div className="space-y-6">
+        <P>
+          Scaled dot-product attention looks like linear algebra: three projections, a matmul, a
+          softmax, another matmul. Read it geometrically and it becomes something older and more
+          familiar — the Nadaraya–Watson kernel estimator from 1964. Every transformer layer is
+          doing kernel smoothing against a bank of learned memories; "attention" is just the
+          exponentiated-inner-product kernel. Once you see this, the entire architecture rhymes
+          with the math we built in Tracks 6 and 7.
+        </P>
+
+        <Def title="Scaled dot-product attention">
+          Given queries <InlineMath math="Q \in \mathbb{R}^{n \times d}" />, keys{' '}
+          <InlineMath math="K \in \mathbb{R}^{m \times d}" />, and values{' '}
+          <InlineMath math="V \in \mathbb{R}^{m \times d_v}" />,
+          <BlockMath math="\mathrm{Attn}(Q, K, V) = \mathrm{softmax}\!\left(\frac{Q K^\top}{\sqrt{d}}\right) V." />
+          Row <InlineMath math="i" /> of the output is a convex combination of value rows with
+          weights <InlineMath math="w_{ij} \propto \exp(q_i \cdot k_j / \sqrt{d})" />.
+        </Def>
+
+        <Thm
+          title="Attention is Nadaraya–Watson regression"
+          proof={
+            <>
+              Write the kernel as{' '}
+              <InlineMath math="\kappa(q, k) = \exp(q \cdot k / \sqrt{d})" />; the attention
+              output for query <InlineMath math="q" /> is{' '}
+              <InlineMath math="\sum_j \kappa(q, k_j) v_j / \sum_j \kappa(q, k_j)" />. This is
+              exactly the classical Nadaraya–Watson kernel smoother, with the kernel chosen to
+              be the exponentiated inner product rather than a Gaussian on{' '}
+              <InlineMath math="\|q - k\|^2" />.
+            </>
+          }
+        >
+          Attention is a kernel regressor:
+          <BlockMath math="\mathrm{Attn}(q) = \frac{\sum_j \kappa(q, k_j) v_j}{\sum_j \kappa(q, k_j)}, \qquad \kappa(q, k) = e^{q \cdot k / \sqrt{d}}." />
+          On the unit sphere, <InlineMath math="q \cdot k = 1 - \tfrac{1}{2}\|q - k\|^2" />, so
+          the kernel is a Gaussian-in-angle, and attention is RBF kernel smoothing.
+        </Thm>
+
+        <div className="py-2"><AttentionViz /></div>
+
+        <Def title="Multi-head attention">
+          Run <InlineMath math="h" /> attention operations in parallel with distinct{' '}
+          <InlineMath math="(W_Q^{(i)}, W_K^{(i)}, W_V^{(i)})" /> projections, concatenate, and
+          project: <InlineMath math="\mathrm{MHA}(X) = W_O \,[\,\mathrm{head}_1, \ldots, \mathrm{head}_h]" />.
+          Each head sees a different kernel on a different linear subspace of the embedding.
+          Multi-head attention is a <em>mixture of kernels</em>.
+        </Def>
+
+        <Thm title="Rank bound on attention output">
+          With sequence length <InlineMath math="n" /> and head dim <InlineMath math="d" />, the
+          attention weight matrix is rank ≤ <InlineMath math="d" />. Multiple heads sum rank
+          contributions; this is why <InlineMath math="h \cdot d_{\mathrm{head}} \approx d_{\mathrm{model}}" /> —
+          you need enough cumulative rank to represent arbitrary communication patterns.
+        </Thm>
+
+        <Practice>
+          <strong>FlashAttention</strong> (Dao, 2022) computes this same kernel smoothing
+          block-by-block without materializing the full <InlineMath math="n \times m" /> weight
+          matrix — IO-optimal exact attention. <strong>Linear attention</strong>{' '}
+          (Katharopoulos et al., Performer) replaces the softmax kernel with a factored feature
+          map <InlineMath math="\phi(q) \phi(k)^\top" />, turning the Nadaraya–Watson sum into a
+          running accumulator with <InlineMath math="O(n)" /> compute. <strong>Induction
+          heads</strong> (Anthropic, Olsson et al.) are kernel smoothers where the key-query
+          match literally implements an N-gram lookup — the cleanest interpretable kernel in
+          transformer land. Understanding attention as kernel regression IS the interpretability
+          lens.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson9_2.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import SoftmaxViz from '../../viz/2d/SoftmaxViz';
+
+export default function Lesson9_2() {
+  return (
+    <LessonShell lessonId="llminfra-9-2">
+      <div className="space-y-6">
+        <P>
+          The softmax is an innocuous line of code — three instructions in PyTorch. It is also a
+          smooth diffeomorphism from <InlineMath math="\mathbb{R}^n / \mathbb{R} \mathbf{1}" />
+          {' '}to the open probability simplex, with a convex log-partition, a Bregman geometry,
+          and a temperature knob that moves continuously between center-of-mass and argmax. Every
+          sampling, routing, and gating decision in an LLM lives on this surface.
+        </P>
+
+        <Def title="Softmax as Gibbs distribution">
+          For logits <InlineMath math="z \in \mathbb{R}^n" /> and inverse temperature{' '}
+          <InlineMath math="\beta \ge 0" />,
+          <BlockMath math="p_i = \frac{e^{\beta z_i}}{\sum_j e^{\beta z_j}} = \frac{e^{\beta z_i}}{Z(\beta, z)}." />
+          This is the Gibbs distribution with "energy" <InlineMath math="-z_i" /> and
+          "temperature" <InlineMath math="1/\beta" />. The log-partition{' '}
+          <InlineMath math="A(\beta z) = \log \sum_j e^{\beta z_j}" /> is the same convex
+          function we met in the exponential-family lesson (§7.4).
+        </Def>
+
+        <Thm
+          title="Softmax is the gradient of log-sum-exp"
+          proof={
+            <>
+              Differentiate <InlineMath math="A(z) = \log \sum_j e^{z_j}" /> w.r.t.{' '}
+              <InlineMath math="z_i" />:{' '}
+              <InlineMath math="\partial_i A = e^{z_i} / \sum_j e^{z_j} = p_i" />. So
+              <InlineMath math="\nabla A = \mathrm{softmax}(z)" />; convexity of{' '}
+              <InlineMath math="A" /> (its Hessian is <InlineMath math="\mathrm{diag}(p) - p p^\top \succeq 0" />)
+              gives uniqueness and smoothness of the map.
+            </>
+          }
+        >
+          <InlineMath math="\mathrm{softmax}(z) = \nabla \log \sum_j e^{z_j}" />. The map is a
+          diffeomorphism from <InlineMath math="\mathbb{R}^n / \mathbb{R} \mathbf{1}" /> onto the
+          open simplex <InlineMath math="\Delta^{n-1}" />, with Jacobian{' '}
+          <InlineMath math="\mathrm{diag}(p) - p p^\top" /> — the Fisher information metric of
+          the categorical family.
+        </Thm>
+
+        <div className="py-2"><SoftmaxViz /></div>
+
+        <Def title="Temperature limits">
+          As <InlineMath math="\beta \to 0" />, softmax → uniform distribution (maximum entropy).
+          As <InlineMath math="\beta \to \infty" />, softmax → argmax (a one-hot at the unique
+          top logit; tied logits yield a tied limit). The cross-entropy loss{' '}
+          <InlineMath math="-\log p_y" /> at <InlineMath math="\beta = 1" /> is the
+          Bregman divergence generated by <InlineMath math="A" />.
+        </Def>
+
+        <Thm title="Top-k, top-p, and truncated support">
+          Top-<InlineMath math="k" /> sampling restricts to the top <InlineMath math="k" />{' '}
+          logits; top-<InlineMath math="p" /> (nucleus) keeps the smallest prefix whose
+          probability mass exceeds <InlineMath math="p" />. Both are projections of the softmax
+          onto a face of the simplex, preserving relative ratios within the kept set.
+        </Thm>
+
+        <Practice>
+          <strong>Sampling temperature</strong> is the knob everyone turns — it literally IS{' '}
+          <InlineMath math="1/\beta" /> of this softmax. <strong>MoE routing</strong>{' '}
+          (Shazeer, Switch Transformer, Mixtral) uses a softmax over expert logits, often with
+          top-<InlineMath math="k" />-routing to enforce sparsity; the "router loss" is exactly
+          the entropy of this softmax over experts. <strong>RLHF</strong> policy distributions
+          are softmaxes whose logits are shifted by a learned reward; KL penalties between
+          trained and reference softmax distributions live on the simplex geometry described
+          above. <strong>Gumbel-softmax</strong> and <strong>straight-through estimators</strong>
+          are reparameterization tricks that differentiate through the{' '}
+          <InlineMath math="\beta \to \infty" /> argmax.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson9_3.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import LayerNormViz from '../../viz/2d/LayerNormViz';
+
+export default function Lesson9_3() {
+  return (
+    <LessonShell lessonId="llminfra-9-3">
+      <div className="space-y-6">
+        <P>
+          Modern transformers have one hundred — two hundred — layers. Without residual
+          connections and LayerNorm they would be untrainable; with them, they behave like
+          numerical solvers for an ordinary differential equation whose vector field is learned.
+          The residual stream is the state; each layer is one Euler step of continuous-depth
+          dynamics; LayerNorm is a Riemannian projection onto a unit sphere before each update.
+          The transformer is an ODE solver in disguise.
+        </P>
+
+        <Def title="Residual stream update">
+          A transformer block with pre-norm takes
+          <BlockMath math="x_{\ell + 1} = x_\ell + f_\ell\big(\mathrm{LN}(x_\ell)\big)" />
+          where <InlineMath math="f_\ell" /> is attention or an MLP sub-block. Layers write into
+          a shared "stream" by adding their output — never overwriting. Reading from the stream
+          is done via attention's value projection.
+        </Def>
+
+        <Thm
+          title="Residual networks are ODE Euler solvers"
+          proof={
+            <>
+              Interpret depth <InlineMath math="\ell" /> as continuous time{' '}
+              <InlineMath math="t" /> and <InlineMath math="f_\ell" /> as evaluations of a
+              vector field <InlineMath math="F(x, t)" />. Then{' '}
+              <InlineMath math="x_{\ell + 1} = x_\ell + \Delta t \cdot F(x_\ell, t_\ell)" /> is
+              forward Euler with <InlineMath math="\Delta t = 1" />. Taking depth{' '}
+              <InlineMath math="\to \infty" /> with re-scaling recovers the neural ODE.
+            </>
+          }
+        >
+          The residual architecture is a discretization of
+          <BlockMath math="\frac{dx}{d\ell} = F(x, \ell)" />
+          where <InlineMath math="F" /> is the layer's learned operator. Very deep residual nets
+          are stable for the same reason A-stable ODE integrators are: the additive-update
+          structure keeps errors from compounding multiplicatively.
+        </Thm>
+
+        <div className="py-2"><LayerNormViz /></div>
+
+        <Def title="LayerNorm as sphere projection">
+          <InlineMath math="\mathrm{LN}(x) = \gamma \odot \frac{x - \mu(x)}{\sigma(x)} + \beta" />.
+          After subtracting the mean, the vector <InlineMath math="(x - \mu)" /> is projected to
+          the unit sphere scaled by <InlineMath math="\sqrt{d}" /> (since{' '}
+          <InlineMath math="\sigma^2 = \|x - \mu\|^2 / d" />). Affine parameters{' '}
+          <InlineMath math="\gamma, \beta" /> re-scale and shift.
+        </Def>
+
+        <Thm title="Pre-norm vs post-norm">
+          Pre-norm <InlineMath math="x + f(\mathrm{LN}(x))" /> is stable to arbitrary depth; the
+          residual path is an identity and gradients flow un-normalized. Post-norm{' '}
+          <InlineMath math="\mathrm{LN}(x + f(x))" /> has a normalization <em>after</em> the
+          residual, breaking the identity path and requiring careful learning-rate warmup.
+          Modern LLMs (GPT-2+, Llama) all use pre-norm; original Transformer (Vaswani 2017)
+          used post-norm.
+        </Thm>
+
+        <Practice>
+          <strong>RMSNorm</strong> (Zhang & Sennrich, 2019) drops the mean-subtraction step —
+          just divides by RMS — and is used in Llama, Mistral, Qwen. It's cheaper, and the
+          mean-subtraction was mostly cosmetic since downstream matmuls are mean-equivariant.
+          <strong>Neural ODEs</strong> (Chen et al., 2018) take the continuous limit literally:
+          replace the residual stack with an ODE solver, parameterize <InlineMath math="F" />
+          {' '}as a single net, and backprop via the adjoint method.{' '}
+          <strong>Time-step schedules</strong> in diffusion models and flow matching use the same
+          integration-of-vector-field framework; the mathematics of transformer depth and
+          diffusion denoising are structurally identical.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson9_4.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import ConcentrationViz from '../../viz/2d/ConcentrationViz';
+
+export default function Lesson9_4() {
+  return (
+    <LessonShell lessonId="llminfra-9-4">
+      <div className="space-y-6">
+        <P>
+          Intuition built in three dimensions lies to us about a thousand. In high dimensions,
+          random vectors concentrate: nearly all their mass lives in a thin equatorial shell, any
+          smooth function of them barely varies, and "surprise" becomes rare by default. This
+          isn't a technicality — measure concentration is why neural networks are robust at all,
+          why dropout regularizes, why random initialization produces near-constant outputs, and
+          why LLM embeddings with thousands of dimensions can be meaningful rather than noise.
+        </P>
+
+        <Def title="Concentration of Lipschitz functions on the sphere">
+          Let <InlineMath math="f : S^{n-1} \to \mathbb{R}" /> be <InlineMath math="L" />-Lipschitz.
+          For <InlineMath math="X" /> uniform on <InlineMath math="S^{n-1}" />, Lévy's
+          isoperimetric inequality gives
+          <BlockMath math="\Pr\!\big(|f(X) - \mathbb{E} f(X)| \ge t\big) \le 2 \exp\!\left(-\frac{n t^2}{2 L^2}\right)." />
+          The fluctuations of <InlineMath math="f" /> around its mean shrink exponentially in the
+          dimension.
+        </Def>
+
+        <Thm
+          title="Gaussian concentration"
+          proof={
+            <>
+              Use log-Sobolev (Gross, 1975): for <InlineMath math="X \sim \mathcal{N}(0, I_n)" />
+              {' '}and <InlineMath math="L" />-Lipschitz <InlineMath math="f" />,
+              entropy–variance control gives subgaussian tails with variance proxy{' '}
+              <InlineMath math="L^2" /> — a dimension-free statement. Lévy's bound on the sphere
+              follows by projection.
+            </>
+          }
+        >
+          For <InlineMath math="X \sim \mathcal{N}(0, I_n)" /> and <InlineMath math="L" />-Lipschitz{' '}
+          <InlineMath math="f" />,
+          <BlockMath math="\Pr\!\big(|f(X) - \mathbb{E} f(X)| \ge t\big) \le 2 \exp\!\left(-\frac{t^2}{2 L^2}\right)." />
+          Note this has NO <InlineMath math="n" /> in the denominator inside the exponent —
+          Gaussian concentration is dimension-free (at fixed Lipschitz norm).
+        </Thm>
+
+        <div className="py-2"><ConcentrationViz /></div>
+
+        <Def title="Equatorial concentration">
+          On <InlineMath math="S^{n-1}" />, for any fixed unit vector{' '}
+          <InlineMath math="u" />, the inner product <InlineMath math="\langle X, u \rangle" />
+          {' '}has variance <InlineMath math="1/n" /> — vanishing. Almost all surface area of a
+          high-dim sphere lies near any great circle. This is the "equator paradox" and is why
+          random projections preserve distances (Johnson–Lindenstrauss).
+        </Def>
+
+        <Thm title="Johnson–Lindenstrauss lemma">
+          For <InlineMath math="m = O(\varepsilon^{-2} \log N)" />, a random linear map{' '}
+          <InlineMath math="\mathbb{R}^n \to \mathbb{R}^m" /> preserves pairwise distances among
+          <InlineMath math="N" /> fixed points up to factor <InlineMath math="1 \pm \varepsilon" />{' '}
+          w.h.p. The target dim depends only logarithmically on <InlineMath math="N" /> and not
+          at all on the source dim <InlineMath math="n" />.
+        </Thm>
+
+        <Practice>
+          <strong>Why embeddings work</strong>: meaningful geometry survives projection into a
+          much smaller dimension — BERT-768 and Llama-4096 are JL-compressed faithful
+          representations of many-billion-concept spaces. <strong>Dropout</strong> injects
+          coordinate-wise noise on high-dim hidden states; measure concentration means the
+          forward pass is robust to this. <strong>Random init</strong> of wide layers produces
+          outputs concentrated near the mean — no individual weight matters until training
+          breaks the symmetry. <strong>Catastrophic forgetting vs. task vectors</strong>:
+          Lipschitz functions of concentrated embeddings are predictable, which is why subtask
+          fine-tuning generalizes. <strong>Adversarial examples</strong> exploit the
+          <em>other</em> half — directions where Lipschitzness is violated — and those
+          directions exist precisely because ReLU nets are NOT uniformly Lipschitz.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson9_5.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import TropicalViz from '../../viz/2d/TropicalViz';
+
+export default function Lesson9_5() {
+  return (
+    <LessonShell lessonId="llminfra-9-5">
+      <div className="space-y-6">
+        <P>
+          A ReLU network is piecewise-linear. Input space is carved into polyhedral cells, and
+          on each cell the network is an affine function; the cells are glued along
+          codimension-one breakpoints where some neuron switches on or off. This is algebraic
+          geometry over the <em>tropical semiring</em>{' '}
+          <InlineMath math="(\mathbb{R} \cup \{-\infty\}, \max, +)" /> — and it gives the
+          sharpest known bounds on how expressive a ReLU network can be as a function of depth
+          and width.
+        </P>
+
+        <Def title="Tropical semiring">
+          Addition is max, multiplication is ordinary addition:
+          <BlockMath math="a \oplus b = \max(a, b), \qquad a \otimes b = a + b." />
+          A tropical polynomial <InlineMath math="f(x) = \max_i (a_i \cdot x + b_i)" /> is a
+          max of affine functions — i.e., a convex piecewise-linear function. Tropical geometry
+          studies the zero-set and Newton polytopes of such polynomials.
+        </Def>
+
+        <Thm
+          title="ReLU networks are tropical rational maps"
+          proof={
+            <>
+              <InlineMath math="\max(0, x) = \max(0, x)" /> is tropical addition of{' '}
+              <InlineMath math="0" /> and <InlineMath math="x" />; linear layers are tropical
+              multiplication by a matrix of constants; subtractions (via negative weights)
+              introduce tropical division. Composing yields rational expressions in the tropical
+              algebra (Zhang, Naitzat, Lim, 2018).
+            </>
+          }
+        >
+          A ReLU feedforward net is a <em>tropical rational function</em>: a ratio (in the
+          tropical sense) of two tropical polynomials. The output is piecewise-linear in the
+          input, with number of linear pieces bounded by the product of tropical polynomials'
+          number of "monomials."
+        </Thm>
+
+        <div className="py-2"><TropicalViz /></div>
+
+        <Def title="Linear-region count">
+          Let <InlineMath math="R_L(n_0, n_1, \ldots, n_L)" /> be the maximum number of linear
+          regions of a depth-<InlineMath math="L" /> ReLU net with layer widths{' '}
+          <InlineMath math="n_\ell" />. Montúfar et al. (2014) proved
+          <BlockMath math="R_L \le \prod_{\ell=1}^L \sum_{j=0}^{n_0} \binom{n_\ell}{j} \le \binom{n}{n_0}^L" />
+          for <InlineMath math="n_0 \le n_\ell = n" />. Depth gives exponential gain; width gives
+          polynomial gain. This is the theoretical justification for "deep matters."
+        </Def>
+
+        <Thm title="Expressivity via region counting">
+          A function <InlineMath math="g" /> that requires <InlineMath math="R" /> linear regions
+          to represent cannot be approximated to accuracy <InlineMath math="\varepsilon" /> by a
+          ReLU net with fewer than <InlineMath math="\Omega(R)" /> regions. Since depth grows
+          regions exponentially faster than width, shallow networks need exponentially many
+          parameters to match deep ones — the "depth vs. width" trade-off is a tropical
+          combinatorics result.
+        </Thm>
+
+        <Practice>
+          <strong>ReLU-only MLPs</strong> are exactly tropical rational. <strong>GELU /
+          SwiGLU</strong> activations break strict piecewise-linearity but are well-approximated
+          by tropical rationals; their region counts are an upper bound on effective expressivity.
+          <strong>Pruning</strong> (lottery ticket, structured sparsity) can be analyzed by
+          counting which linear regions get collapsed when weights are zeroed.{' '}
+          <strong>Mixture of Experts</strong> is itself a tropical piecewise construction at the
+          architecture level: the routed expert is a <InlineMath math="\max" /> over expert
+          logits, combined with that expert's forward pass. <strong>Neural architecture
+          search</strong> via region count (Hanin & Rolnick, 2019) — a training-free proxy for
+          expressivity — is grounded in this tropical framework.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson9_6.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import ScalingLawViz from '../../viz/2d/ScalingLawViz';
+
+export default function Lesson9_6() {
+  return (
+    <LessonShell lessonId="llminfra-9-6">
+      <div className="space-y-6">
+        <P>
+          Kaplan (2020) and Hoffmann et al. (Chinchilla, 2022) empirically measured a
+          three-variable power law in parameters <InlineMath math="N" />, data{' '}
+          <InlineMath math="D" />, and compute <InlineMath math="C" />. The fits are eerily
+          clean and span seven orders of magnitude. They are power laws with non-trivial
+          exponents — the same mathematical form that shows up at second-order phase transitions
+          in physics. We are doing statistical mechanics whether we like it or not, and LLM
+          training sits near a critical point.
+        </P>
+
+        <Def title="Chinchilla scaling law">
+          Language-model loss as a function of parameter count <InlineMath math="N" /> and
+          training tokens <InlineMath math="D" />:
+          <BlockMath math="L(N, D) = E + \frac{A}{N^{\alpha_N}} + \frac{B}{D^{\alpha_D}}." />
+          Fit yields <InlineMath math="\alpha_N \approx 0.34" />,{' '}
+          <InlineMath math="\alpha_D \approx 0.28" />,{' '}
+          <InlineMath math="E \approx 1.69" /> bits (the "irreducible" entropy of natural
+          language). Compute-optimal training scales <InlineMath math="N \sim D" />: the famous
+          "20 tokens per parameter" rule.
+        </Def>
+
+        <Thm
+          title="Compute-optimal allocation"
+          proof={
+            <>
+              Under the constraint <InlineMath math="C = 6 N D" /> (FLOPs for a transformer
+              forward+backward pass), Lagrange-minimize{' '}
+              <InlineMath math="A N^{-\alpha_N} + B D^{-\alpha_D}" />. The FOC yields
+              <InlineMath math="N^* \propto C^{a}" />, <InlineMath math="D^* \propto C^{b}" />
+              {' '}with <InlineMath math="a = \alpha_D / (\alpha_N + \alpha_D)" />.
+            </>
+          }
+        >
+          Minimizing <InlineMath math="L" /> subject to a compute budget{' '}
+          <InlineMath math="C \approx 6 N D" /> yields
+          <BlockMath math="N^* \propto C^{\alpha_D / (\alpha_N + \alpha_D)}, \qquad D^* \propto C^{\alpha_N / (\alpha_N + \alpha_D)}." />
+          With Chinchilla's exponents, <InlineMath math="N^*" /> and <InlineMath math="D^*" />
+          {' '}each scale roughly as <InlineMath math="C^{1/2}" /> — data and params grow
+          together, not one before the other.
+        </Thm>
+
+        <div className="py-2"><ScalingLawViz /></div>
+
+        <Def title="Critical-phenomena analogy">
+          Near a second-order phase transition, the correlation length diverges and
+          observables follow power laws in the distance to criticality:{' '}
+          <InlineMath math="\xi \sim |T - T_c|^{-\nu}" />,{' '}
+          <InlineMath math="C \sim |T - T_c|^{-\alpha}" />. The Chinchilla exponents play the
+          same role. Neural scaling laws are consistent with the hypothesis that large-scale
+          learning sits at the <em>edge of a data-manifold phase transition</em>.
+        </Def>
+
+        <Thm title="Emergence as criticality">
+          Specific capabilities (arithmetic, few-shot reasoning, instruction following) appear
+          abruptly at threshold compute. Wei et al. (2022), later reinterpreted by Schaeffer et
+          al. (2023), argued some emergence is an artifact of metric choice; but scaling laws
+          predict that any nonlinear benchmark on a linearly-improving log-likelihood produces
+          phase-transition-like curves. This is critical-phenomena universality applied to
+          benchmark metrics.
+        </Thm>
+
+        <Practice>
+          <strong>Chinchilla-optimal training</strong> (<InlineMath math="\sim 20" />{' '}
+          tokens/parameter) is now industry standard; GPT-3 was wildly under-trained by this
+          criterion. <strong>MoE scaling laws</strong> (Clark et al., 2022) have distinct
+          exponents because active parameters and total parameters decouple.{' '}
+          <strong>Multimodal and reasoning-fine-tuned models</strong> show broken scaling —
+          power laws with a knee, indicating a regime change at the transition between
+          imitation and reasoning (Anthropic, OpenAI observations around GPT-4 / Claude 3).
+          <strong>Inference-time compute scaling</strong> (o1, Claude with extended thinking) is
+          a <em>second</em> power law on top of the pretraining one: loss decreases as a power
+          of serial tokens generated at test time. The frontier is learning to navigate
+          multiple crossing power laws at once.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+## Track: probability
+
+### Lesson Component: Lesson3_1.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import Simplex2D from '../../viz/2d/Simplex2D';
+
+export default function Lesson3_1() {
+  return (
+    <LessonShell lessonId="probability-3-1">
+      <div className="space-y-6">
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          Probabilities live on a simplex.
+        </p>
+        <div className="py-8">
+          <Simplex2D />
+        </div>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson3_2.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import EntropyPlot from '../../viz/2d/EntropyPlot';
+
+export default function Lesson3_2() {
+  return (
+    <LessonShell lessonId="probability-3-2">
+      <div className="space-y-6">
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          Entropy measures spread.
+        </p>
+        <div className="py-8">
+          <EntropyPlot />
+        </div>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson3_3.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import BayesUpdate from '../../viz/2d/BayesUpdate';
+
+export default function Lesson3_3() {
+  return (
+    <LessonShell lessonId="probability-3-3">
+      <div className="space-y-6">
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          Bayes rule is an update on a prior.
+        </p>
+        <div className="py-8">
+          <BayesUpdate />
+        </div>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+## Track: scaling
+
+### Lesson Component: Lesson8_1.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import FractalViz from '../../viz/2d/FractalViz';
+
+export default function Lesson8_1() {
+  return (
+    <LessonShell lessonId="scaling-8-1">
+      <div className="space-y-6">
+        <P>
+          Integer dimension is a counting argument — a line needs one coordinate, a plane two. But
+          "how many boxes of size <InlineMath math="\varepsilon" /> to cover this set" does not
+          always scale like an integer power. For self-similar objects built from rescaled copies
+          of themselves, the exponent — their <em>dimension</em> — is often a rational or
+          irrational number between integers. This is the first hint that complexity is a
+          geometric quantity, and it rules deep-learning loss surfaces.
+        </P>
+
+        <Def title="Box-counting dimension">
+          Let <InlineMath math="N(\varepsilon)" /> be the minimum number of boxes of side{' '}
+          <InlineMath math="\varepsilon" /> required to cover <InlineMath math="S \subset \mathbb{R}^d" />.
+          The box dimension is
+          <BlockMath math="\dim_{\mathrm{box}}(S) = \lim_{\varepsilon \to 0} \frac{\log N(\varepsilon)}{\log(1/\varepsilon)}." />
+          When <InlineMath math="S" /> is self-similar under <InlineMath math="m" /> contractions
+          each of ratio <InlineMath math="1/k" />, this reduces to{' '}
+          <InlineMath math="\dim_{\mathrm{box}}(S) = \log m / \log k" />.
+        </Def>
+
+        <Thm
+          title="Moran's equation"
+          proof={
+            <>
+              For a self-similar set <InlineMath math="S = \bigcup_i f_i(S)" /> with ratios{' '}
+              <InlineMath math="r_i" /> under the open-set condition, covering requires at level{' '}
+              <InlineMath math="n" /> about <InlineMath math="(\sum_i r_i^s)^n" /> boxes; taking
+              logs and dividing yields the Hausdorff dimension when this sum equals 1.
+            </>
+          }
+        >
+          The Hausdorff dimension <InlineMath math="s" /> of a self-similar attractor satisfies
+          <BlockMath math="\sum_{i=1}^m r_i^s = 1." />
+          For <InlineMath math="m" /> equal contractions of ratio <InlineMath math="r" />, this
+          gives <InlineMath math="s = \log m / \log(1/r)" /> — the Cantor set has{' '}
+          <InlineMath math="\log 2 / \log 3 \approx 0.631" />, the Sierpinski gasket has{' '}
+          <InlineMath math="\log 3 / \log 2 \approx 1.585" />.
+        </Thm>
+
+        <div className="py-2"><FractalViz /></div>
+
+        <Def title="Multifractal spectrum">
+          When different regions of <InlineMath math="S" /> scale at different rates, one measures
+          the spectrum <InlineMath math="f(\alpha)" /> of local Hölder exponents{' '}
+          <InlineMath math="\alpha" />. A single <InlineMath math="\alpha" /> means monofractal; a
+          band indicates turbulence, stock returns, and neural-network loss surfaces — all
+          generically multifractal.
+        </Def>
+
+        <Thm title="Loss landscapes are fractal">
+          Draper, Goodfellow, and others (2017–2022) showed that trained-network loss surfaces
+          have <em>effective dimension</em> far below their parameter count, and exhibit
+          self-similar barriers across scales. This is why mode-connectivity paths exist: the
+          valleys of the loss form a fractal connected set, not isolated basins.
+        </Thm>
+
+        <Practice>
+          The Kaplan–Hoffmann scaling laws{' '}
+          <InlineMath math="L(N) \propto N^{-\alpha_N}" /> are fractal-dimension statements in
+          disguise. They say that as you double parameters, loss decreases by a{' '}
+          <em>constant ratio</em> — the hallmark of self-similarity. The exponent{' '}
+          <InlineMath math="\alpha_N \approx 0.076" /> (Chinchilla) IS a Hausdorff-type dimension
+          of the model family's information manifold, measured empirically. Neural scaling is
+          geometry.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson8_2.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import PowerLawViz from '../../viz/2d/PowerLawViz';
+
+export default function Lesson8_2() {
+  return (
+    <LessonShell lessonId="scaling-8-2">
+      <div className="space-y-6">
+        <P>
+          The Central Limit Theorem is a seductive story: add enough independent things, get a
+          Gaussian. But it assumes finite variance. Drop that assumption — admit that some
+          events are hundreds or thousands of times larger than typical — and the limiting
+          distributions change entirely. In finance, earthquakes, token frequencies, and the
+          magnitudes of perturbations on a living mind, the variance is infinite. You need
+          power laws and Lévy-stable distributions instead of bells.
+        </P>
+
+        <Def title="Power-law tail">
+          A distribution with density <InlineMath math="p(x) \sim C x^{-\alpha}" /> as{' '}
+          <InlineMath math="x \to \infty" /> has <em>tail exponent</em>{' '}
+          <InlineMath math="\alpha" />. The <InlineMath math="k" />-th moment{' '}
+          <InlineMath math="\mathbb{E}[X^k]" /> is finite iff{' '}
+          <InlineMath math="\alpha > k + 1" />. Variance diverges for{' '}
+          <InlineMath math="\alpha \le 3" />; mean diverges for{' '}
+          <InlineMath math="\alpha \le 2" /> (one-sided support).
+        </Def>
+
+        <Thm
+          title="Generalized CLT (Gnedenko–Kolmogorov)"
+          proof={
+            <>
+              Fourier-transform the sum's characteristic function and expand. For finite variance
+              only the second moment survives the rescaling, giving a Gaussian characteristic
+              function. For infinite variance but a regularly-varying tail of index{' '}
+              <InlineMath math="\alpha \in (0, 2)" />, the dominant term is
+              <InlineMath math="|t|^\alpha" /> — the characteristic function of an{' '}
+              <InlineMath math="\alpha" />-stable law.
+            </>
+          }
+        >
+          If <InlineMath math="X_i" /> are i.i.d. with a tail of exponent{' '}
+          <InlineMath math="\alpha \in (0, 2]" />, then for some normalization constants{' '}
+          <InlineMath math="a_n, b_n" />,
+          <BlockMath math="\frac{X_1 + \cdots + X_n - b_n}{a_n} \xrightarrow{d} S_\alpha," />
+          where <InlineMath math="S_\alpha" /> is <InlineMath math="\alpha" />-stable. Only{' '}
+          <InlineMath math="\alpha = 2" /> gives the Gaussian; for{' '}
+          <InlineMath math="\alpha < 2" /> the limit is heavy-tailed and self-similar.
+        </Thm>
+
+        <div className="py-2"><PowerLawViz /></div>
+
+        <Def title="Zipf's law and Pareto principle">
+          For token frequencies in natural language,{' '}
+          <InlineMath math="f(r) \propto r^{-s}" /> with <InlineMath math="s \approx 1" />:
+          the <InlineMath math="r" />-th most common word appears with frequency inversely
+          proportional to its rank. This is Zipf; the continuous analogue is Pareto.
+        </Def>
+
+        <Thm title="Criticality produces power laws">
+          Near a second-order phase transition, correlations become scale-free: the correlation
+          function <InlineMath math="C(r) \sim r^{-(d - 2 + \eta)}" />. Power laws are the
+          fingerprint of a system tuned to (or self-organized at) a critical point. This is why
+          neural-network scaling laws look like critical exponents.
+        </Thm>
+
+        <Practice>
+          The <strong>Kaplan and Chinchilla scaling laws</strong>{' '}
+          <InlineMath math="L(N, D) = E + A N^{-\alpha} + B D^{-\beta}" /> are power laws in the
+          literal sense. <strong>Token-frequency Zipf</strong> is why LLM embedding layers are
+          dominated by a long tail of rare tokens — BPE helps, but does not eliminate, this.
+          <strong>Gradient noise scale</strong> (McCandlish et al., 2018) is the ratio of
+          per-sample gradient variance to gradient mean-squared; in finite batches it follows a
+          power-law curve whose exponent determines the compute-optimal batch size. Modern
+          training is power-law engineering.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson8_3.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import WignerViz from '../../viz/2d/WignerViz';
+
+export default function Lesson8_3() {
+  return (
+    <LessonShell lessonId="scaling-8-3">
+      <div className="space-y-6">
+        <P>
+          Fill a large symmetric matrix with i.i.d. random numbers. Shake hard. Open the
+          envelope: the eigenvalues do not spread uniformly, do not bunch into delta functions,
+          but arrange themselves along a perfect semicircle. This is Wigner's miracle — a
+          statement so robust it holds for any distribution with finite second moment. It is the
+          entry point to random matrix theory and tells us what "generic" linear coupling looks
+          like at scale.
+        </P>
+
+        <Def title="Wigner ensemble">
+          A <em>Wigner matrix</em> is an <InlineMath math="n \times n" /> symmetric matrix{' '}
+          <InlineMath math="M" /> with entries <InlineMath math="M_{ij}" /> (<InlineMath math="i \le j" />){' '}
+          i.i.d. with mean 0 and variance <InlineMath math="\sigma^2 / n" />. The ensemble
+          <BlockMath math="\mathrm{GOE}: M = (A + A^\top) / \sqrt{2}, \quad A_{ij} \sim \mathcal{N}(0, 1/n)" />
+          is the canonical real-symmetric version (orthogonally invariant).
+        </Def>
+
+        <Thm
+          title="Wigner's semicircle law"
+          proof={
+            <>
+              Compute the <InlineMath math="k" />-th moment of the empirical spectral
+              distribution as <InlineMath math="(1/n)\,\mathrm{tr}(M^k)" />. This counts closed
+              walks of length <InlineMath math="k" />; by symmetry only walks that traverse each
+              edge an even number of times survive in expectation — these are in bijection with
+              Dyck paths, whose number is the Catalan number{' '}
+              <InlineMath math="C_{k/2}" />. Catalan numbers are the moments of the semicircle.
+            </>
+          }
+        >
+          As <InlineMath math="n \to \infty" />, the empirical spectral density of a Wigner
+          matrix converges weakly to
+          <BlockMath math="\rho_{\mathrm{sc}}(\lambda) = \frac{1}{2\pi \sigma^2} \sqrt{4\sigma^2 - \lambda^2} \mathbf{1}_{|\lambda| \le 2\sigma}." />
+          The spectrum is supported on <InlineMath math="[-2\sigma, 2\sigma]" /> with
+          semicircular density — independent of the underlying entry distribution
+          (universality).
+        </Thm>
+
+        <div className="py-2"><WignerViz /></div>
+
+        <Def title="Edge eigenvalues and Tracy–Widom">
+          The largest eigenvalue <InlineMath math="\lambda_{\max}" /> sits at{' '}
+          <InlineMath math="2\sigma" /> with fluctuations of size{' '}
+          <InlineMath math="n^{-2/3}" /> governed by the Tracy–Widom{' '}
+          <InlineMath math="F_1" /> law — NOT Gaussian, NOT exponential. This is the analog of
+          CLT for extreme eigenvalues and controls whether large networks are stable or
+          marginally unstable.
+        </Def>
+
+        <Thm title="Spectral radius bound">
+          For a Wigner matrix with subgaussian entries,{' '}
+          <BlockMath math="\|M\|_{\mathrm{op}} = \lambda_{\max}(M) \le 2\sigma + o(1) \text{ w.h.p.}" />
+          so its singular values are uniformly bounded. This is what keeps deep-network signal
+          propagation finite at large width.
+        </Thm>
+
+        <Practice>
+          <strong>Xavier/He initialization</strong>{' '}
+          (<InlineMath math="W_{ij} \sim \mathcal{N}(0, 2/n)" />) is a Wigner-preserving choice:
+          the forward-pass Jacobian at each layer is a random matrix whose spectral radius
+          concentrates at 1, keeping the signal neither exploding nor vanishing. This is the
+          <em>edge of stability</em>. <strong>Dynamical isometry</strong> (Pennington, Schoenholz,
+          Ganguli, 2017) asks for matrices whose singular values are all {'≈'} 1 (not just the
+          top one) — achievable with orthogonal init, not Gaussian. Modern transformers pay for
+          this with LayerNorm, not initialization.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson8_4.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import MarchenkoPasturViz from '../../viz/2d/MarchenkoPasturViz';
+
+export default function Lesson8_4() {
+  return (
+    <LessonShell lessonId="scaling-8-4">
+      <div className="space-y-6">
+        <P>
+          Compute the sample covariance of <InlineMath math="n" /> observations of a{' '}
+          <InlineMath math="p" />-dimensional random vector with zero mean and identity
+          covariance. The textbook promises you'll recover the identity — but only if{' '}
+          <InlineMath math="n \gg p" />. In modern high-dimensional statistics, and in every
+          layer of a wide neural network, <InlineMath math="n" /> and <InlineMath math="p" /> are
+          comparable. The sample covariance's eigenvalues spread: they form the Marchenko–Pastur
+          distribution, whose edges are exactly predictable in terms of{' '}
+          <InlineMath math="q = p/n" />.
+        </P>
+
+        <Def title="Wishart / sample covariance ensemble">
+          Let <InlineMath math="X \in \mathbb{R}^{n \times p}" /> have i.i.d. entries with mean
+          0 and variance <InlineMath math="\sigma^2" />. The sample covariance is{' '}
+          <InlineMath math="S = \frac{1}{n} X^\top X \in \mathbb{R}^{p \times p}" />. In the
+          double-limit <InlineMath math="n, p \to \infty" /> with{' '}
+          <InlineMath math="p / n \to q \in (0, 1]" />, the empirical eigenvalue distribution
+          has a limit.
+        </Def>
+
+        <Thm
+          title="Marchenko–Pastur law"
+          proof={
+            <>
+              Use the Stieltjes transform{' '}
+              <InlineMath math="m(z) = (1/p)\,\mathrm{tr}((S - z I)^{-1})" /> and derive its
+              self-consistent equation <InlineMath math="z m^2 + (z - 1 + q) m + 1 = 0" /> via
+              resolvent identities. Inverting the imaginary part recovers the density.
+            </>
+          }
+        >
+          The limiting spectral density of <InlineMath math="S" /> is
+          <BlockMath math="\rho_{\mathrm{MP}}(\lambda) = \frac{\sqrt{(\lambda_+ - \lambda)(\lambda - \lambda_-)}}{2\pi \sigma^2 q \lambda}, \quad \lambda \in [\lambda_-, \lambda_+]," />
+          with edges <InlineMath math="\lambda_\pm = \sigma^2 (1 \pm \sqrt{q})^2" />. At{' '}
+          <InlineMath math="q = 1" /> the lower edge hits zero: the bulk touches the origin and
+          <InlineMath math="S" /> is almost singular.
+        </Thm>
+
+        <div className="py-2"><MarchenkoPasturViz /></div>
+
+        <Def title="BBP transition (spikes)">
+          If the true covariance has a few large eigenvalues (spikes) above a critical threshold
+          <InlineMath math="\sqrt{q}" />, they "emerge" from the MP bulk and are detectable;
+          below the threshold they are buried in noise. This is the{' '}
+          <em>Baik–Ben-Arous–Péché phase transition</em> and is the theoretical floor for PCA,
+          spiked covariance models, and signal-detection limits in high dimensions.
+        </Def>
+
+        <Thm title="PCA cannot see below the BBP threshold">
+          For a rank-1 signal of strength <InlineMath math="\theta" /> in noise, the top sample
+          eigenvector has nontrivial correlation with the true direction iff{' '}
+          <InlineMath math="\theta > \sqrt{q}" />. Below that, you see noise spikes indistinguishable
+          from signal — no amount of cleverness in the eigendecomposition can recover it from
+          second-order statistics alone.
+        </Thm>
+
+        <Practice>
+          <strong>Activation covariance</strong> in deep networks at initialization follows the
+          MP law with <InlineMath math="q = \text{width in} / \text{width out}" /> — Pennington
+          and Worah (2017) showed Gaussian-init ReLU nets have MP-plus-spike spectra. The spikes
+          are the learned directions. <strong>Neural Net compression</strong> via SVD truncation
+          works because the signal sits as spikes above the MP edge; pruning below the edge is
+          provably information-preserving. <strong>Dyson Brownian motion</strong> — the
+          evolution of eigenvalues under gradient flow of a random matrix — is the theoretical
+          scaffold for analyzing how neural-network Hessians evolve during training.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson8_5.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import LyapunovViz from '../../viz/2d/LyapunovViz';
+
+export default function Lesson8_5() {
+  return (
+    <LessonShell lessonId="scaling-8-5">
+      <div className="space-y-6">
+        <P>
+          Two trajectories start a hair apart. In a stable system they stay close; in a chaotic
+          one they peel apart exponentially. The rate of that peeling is the Lyapunov exponent,
+          and it's a sharp knife: positive means chaos, zero means marginal, negative means
+          dissipation to a fixed point. It decides whether a dynamical system can remember, can
+          compute, or merely scrambles.
+        </P>
+
+        <Def title="Lyapunov exponent">
+          For a dynamical system <InlineMath math="x_{t+1} = f(x_t)" /> (or{' '}
+          <InlineMath math="\dot{x} = F(x)" />), the largest Lyapunov exponent is
+          <BlockMath math="\lambda = \lim_{t \to \infty} \frac{1}{t} \log \frac{\|\delta x(t)\|}{\|\delta x(0)\|} = \lim_{t \to \infty} \frac{1}{t} \sum_{k = 0}^{t-1} \log |f'(x_k)|" />
+          for a differentiable 1D map. Positive <InlineMath math="\lambda" /> means exponential
+          separation; <InlineMath math="\lambda = 0" /> marks the edge of chaos.
+        </Def>
+
+        <Thm
+          title="Oseledec's multiplicative ergodic theorem"
+          proof={
+            <>
+              Apply Kingman's subadditive ergodic theorem to{' '}
+              <InlineMath math="\log \|Df^t(x)\|" />. Subadditivity gives almost-sure
+              convergence along an ergodic orbit, independent of the initial perturbation
+              direction (for the top exponent).
+            </>
+          }
+        >
+          For almost every orbit of an ergodic measure, the limit defining{' '}
+          <InlineMath math="\lambda" /> exists and is independent of <InlineMath math="x_0" />.
+          For <InlineMath math="n" />-dimensional dynamics, the Lyapunov spectrum{' '}
+          <InlineMath math="\lambda_1 \ge \cdots \ge \lambda_n" /> partitions{' '}
+          <InlineMath math="\mathbb{R}^n" /> into invariant subspaces labelled by exponent.
+        </Thm>
+
+        <div className="py-2"><LyapunovViz /></div>
+
+        <Def title="Kolmogorov–Sinai entropy">
+          <InlineMath math="h_{\mathrm{KS}} = \sum_{\lambda_i > 0} \lambda_i" />: the rate of
+          information production along typical trajectories. Positive KS entropy IS chaos IS
+          sensitive-dependence-on-initial-conditions. The Kaplan–Yorke conjecture ties this to
+          the attractor's fractal dimension: <InlineMath math="d_{KY} = k + \sum_{i \le k} \lambda_i / |\lambda_{k+1}|" />.
+        </Def>
+
+        <Thm title="Edge of chaos in recurrent networks">
+          A recurrent net's training signal is carried by gradient magnitudes, which grow like{' '}
+          <InlineMath math="\exp(\lambda T)" /> across <InlineMath math="T" /> timesteps. For the
+          backprop signal to neither explode nor vanish, we need{' '}
+          <InlineMath math="\lambda \approx 0" /> — the edge of chaos. LSTM/GRU gating, and
+          orthogonal initialization of recurrent matrices, exist to enforce this.
+        </Thm>
+
+        <Practice>
+          <strong>Signal propagation</strong> in feedforward networks (Schoenholz et al., 2017)
+          uses a depth-wise Lyapunov exponent on correlations between input pairs: at criticality
+          ( <InlineMath math="\lambda = 0" /> ) correlations propagate, elsewhere they collapse
+          or saturate. <strong>Transformers sidestep this</strong>: residual streams skip
+          nonlinearities, so the effective Jacobian at depth is a sum, not a product, and
+          gradient signal survives hundreds of layers without edge-of-chaos tuning.
+          <strong>Neural ODEs</strong> inherit the full Lyapunov analysis of the underlying
+          vector field. <strong>SGD's implicit regularization</strong> includes a bias toward
+          flat minima with small top Hessian eigenvalue — small Lyapunov, stable solutions.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson8_6.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import NTKViz from '../../viz/2d/NTKViz';
+
+export default function Lesson8_6() {
+  return (
+    <LessonShell lessonId="scaling-8-6">
+      <div className="space-y-6">
+        <P>
+          A neural network is a parametric function — which, for any nontrivial architecture,
+          means a highly nonlinear dependence on weights. But take width to infinity with the
+          right scaling, and something miraculous happens: the dynamics linearize. The network's
+          evolution under gradient descent becomes equivalent to kernel regression with a fixed
+          kernel, the Neural Tangent Kernel. This single observation unified the theory of deep
+          learning — and revealed precisely how and when it breaks.
+        </P>
+
+        <Def title="Neural Tangent Kernel">
+          For a network <InlineMath math="f_\theta(x)" /> with parameters{' '}
+          <InlineMath math="\theta" />, the empirical NTK is
+          <BlockMath math="\Theta_\theta(x, x') = \big\langle \nabla_\theta f_\theta(x),\, \nabla_\theta f_\theta(x') \big\rangle." />
+          In the infinite-width limit with NTK parameterization,{' '}
+          <InlineMath math="\Theta_\theta \to \Theta^*" /> deterministically at initialization,
+          and crucially stays constant throughout training.
+        </Def>
+
+        <Thm
+          title="NTK training dynamics are kernel gradient flow"
+          proof={
+            <>
+              For MSE loss <InlineMath math="L = \frac{1}{2}\|f_\theta(X) - Y\|^2" />,
+              <InlineMath math="\dot\theta = -\nabla_\theta L" /> gives
+              <InlineMath math="\dot{f_\theta(X)} = -\Theta_\theta(X, X)(f_\theta(X) - Y)" /> by
+              the chain rule. In the width-infinity limit <InlineMath math="\Theta_\theta" /> is
+              constant, so <InlineMath math="f" /> at training points follows closed-form
+              exponential convergence.
+            </>
+          }
+        >
+          Under gradient flow in the NTK regime,
+          <BlockMath math="f_t(x) = f_0(x) + \Theta^*(x, X)\, \Theta^*(X, X)^{-1} \big(I - e^{-\eta \Theta^*(X, X) t}\big) (Y - f_0(X))." />
+          As <InlineMath math="t \to \infty" />, the predictor is exactly the kernel-ridgeless
+          regressor in the RKHS of <InlineMath math="\Theta^*" />. Training is deterministic
+          once you know the kernel.
+        </Thm>
+
+        <div className="py-2"><NTKViz /></div>
+
+        <Def title="Feature learning vs lazy regime">
+          The NTK regime is "lazy": weights barely move (<InlineMath math="\|\theta_t - \theta_0\| = O(1/\sqrt{\mathrm{width}})" />).
+          Features are fixed at initialization; only readouts adapt. The{' '}
+          <em>feature-learning regime</em> — μP (Yang & Hu, 2021), Tensor Programs — uses a
+          different scaling that keeps nontrivial weight movement in the infinite-width limit,
+          recovering representation learning.
+        </Def>
+
+        <Thm title="NTK convergence rate and spectral bias">
+          The convergence rate along each NTK eigendirection is{' '}
+          <InlineMath math="e^{-\eta \lambda_i t}" />. Low-frequency components (large{' '}
+          <InlineMath math="\lambda_i" />) are learned first; high-frequency components last.
+          This is the <em>spectral bias</em> of neural networks — the reason they generalize
+          before they overfit.
+        </Thm>
+
+        <Practice>
+          The <strong>NTK justifies why very wide networks train stably</strong>: in the
+          linearized regime, the loss surface is convex in function-space. <strong>μP
+          parameterization</strong> is the production-grade correction used by GPT-4-class
+          models: keep features learning as width scales, unlike the lazy NTK. Empirically,{' '}
+          <em>both</em> regimes matter — early training is NTK-like, later training diverges
+          into feature-learning territory. <strong>NTK-based architecture search</strong>
+          (Chen et al., Zico) uses kernel alignment as a training-free proxy for final
+          accuracy. Infinite width is a mathematical microscope, not a computational target.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+## Track: signal
+
+### Lesson Component: Lesson6_1.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import HilbertViz from '../../viz/2d/HilbertViz';
+
+export default function Lesson6_1() {
+  return (
+    <LessonShell lessonId="signal-6-1">
+      <div className="space-y-6">
+        <P>
+          Finite-dimensional Euclidean geometry extends, almost verbatim, to infinite-dimensional
+          function spaces — <em>provided</em> we add one axiom: completeness. The result is a
+          Hilbert space, the natural habitat of Fourier analysis, kernel methods, and the attention
+          operator.
+        </P>
+
+        <Def title="Hilbert space">
+          A real (or complex) vector space <InlineMath math="\mathcal{H}" /> with inner product{' '}
+          <InlineMath math="\langle \cdot, \cdot \rangle" /> is a Hilbert space if it is complete in
+          the induced norm <InlineMath math="\|x\| = \sqrt{\langle x, x \rangle}" />: every Cauchy
+          sequence converges in <InlineMath math="\mathcal{H}" />.
+        </Def>
+
+        <P>
+          The canonical example is <InlineMath math="L^2(\mathbb{R}) = \{f : \int |f|^2 < \infty\}" />{' '}
+          with <InlineMath math="\langle f, g \rangle = \int f \bar g" />. Here functions are{' '}
+          <em>vectors</em>; the sine functions <InlineMath math="\{e^{ik\theta}\}" /> form an
+          orthonormal basis on <InlineMath math="L^2(S^1)" />; and every function can be written as
+          a (generalized) sum of basis elements.
+        </P>
+
+        <Thm
+          title="Orthogonal Projection"
+          proof={
+            <>
+              Uniqueness: if <InlineMath math="y_1, y_2" /> both realize the infimum, parallelogram law
+              gives <InlineMath math="\|y_1 - y_2\|^2 \le 0" />. Existence: take a minimizing
+              sequence; the parallelogram law shows it is Cauchy, hence converges by completeness.
+              Orthogonality follows from first-order optimality: for any <InlineMath math="v \in V" />,
+              <InlineMath math="t \mapsto \|x - y - tv\|^2" /> is minimized at 0, forcing{' '}
+              <InlineMath math="\langle x - y, v \rangle = 0" />.
+            </>
+          }
+        >
+          Let <InlineMath math="V \subseteq \mathcal{H}" /> be a closed subspace. For every{' '}
+          <InlineMath math="x \in \mathcal{H}" /> there is a unique{' '}
+          <InlineMath math="y = P_V x \in V" /> with{' '}
+          <InlineMath math="\|x - y\| = \inf_{v \in V} \|x - v\|" />, and{' '}
+          <InlineMath math="(x - P_V x) \perp V" />.
+        </Thm>
+
+        <div className="py-2"><HilbertViz /></div>
+
+        <Thm title="Riesz Representation">
+          Every continuous linear functional <InlineMath math="\ell : \mathcal{H} \to \mathbb{R}" />{' '}
+          has a unique representer <InlineMath math="r_\ell \in \mathcal{H}" /> such that{' '}
+          <InlineMath math="\ell(x) = \langle x, r_\ell \rangle" />.
+        </Thm>
+
+        <Practice>
+          Token embeddings live in a Hilbert space{' '}
+          <InlineMath math="\mathbb{R}^d" />. Cosine similarity is the normalized inner product;
+          attention is the projection operator{' '}
+          <InlineMath math="P_V : \{k_1, \dots, k_n\} \mapsto \text{softmax}(QK^\top/\sqrt d) V" />{' '}
+          onto the span of the value vectors, with softmax providing a soft partition of unity.
+          RKHS theory (next lessons) makes the "kernel = inner product" identification precise.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson6_2.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import FourierViz from '../../viz/2d/FourierViz';
+
+export default function Lesson6_2() {
+  return (
+    <LessonShell lessonId="signal-6-2">
+      <div className="space-y-6">
+        <P>
+          The Fourier transform is the change of basis between time and frequency. On a Hilbert
+          space, it is the unique unitary operator that diagonalizes translation. Every signal is a
+          weighted sum of rotations; every rotation answers to a single frequency.
+        </P>
+
+        <Def title="Fourier transform">
+          For <InlineMath math="f \in L^1(\mathbb{R})" />,
+          <BlockMath math="\hat{f}(\xi) = \int_{\mathbb{R}} f(x) e^{-2\pi i \xi x}\, dx." />
+          It extends uniquely to a unitary operator on <InlineMath math="L^2(\mathbb{R})" />{' '}
+          (Plancherel).
+        </Def>
+
+        <Thm
+          title="Plancherel Identity"
+          proof={
+            <>
+              Polarize <InlineMath math="\|f\|_2^2 = \|\hat f\|_2^2" /> from the isometry of{' '}
+              <InlineMath math="\mathcal{F}" /> on a dense subspace (Schwartz functions), then extend
+              by density.
+            </>
+          }
+        >
+          <InlineMath math="\mathcal{F} : L^2(\mathbb{R}) \to L^2(\mathbb{R})" /> is unitary:
+          <BlockMath math="\langle f, g \rangle = \langle \hat f, \hat g \rangle, \qquad \|f\|_2 = \|\hat f\|_2." />
+        </Thm>
+
+        <div className="py-2"><FourierViz /></div>
+
+        <Thm title="Translation ↔ Modulation">
+          If <InlineMath math="f_a(x) = f(x - a)" />, then <InlineMath math="\hat{f_a}(\xi) = e^{-2\pi i a \xi} \hat{f}(\xi)" />.
+          Spatial translation becomes pointwise phase multiplication in frequency space.
+        </Thm>
+
+        <P>
+          Translation invariance of a linear operator is equivalent to being diagonal in the Fourier
+          basis. This is why convolution{' '}
+          <InlineMath math="(f * g)(x) = \int f(y) g(x-y) dy" /> factorizes under Fourier:{' '}
+          <InlineMath math="\widehat{f * g} = \hat f \cdot \hat g" />. Every translation-equivariant
+          layer — convolutions, periodic signals, RoPE positions — lives here.
+        </P>
+
+        <Practice>
+          Sinusoidal position embeddings <InlineMath math="\text{PE}(p, 2i) = \sin(p / 10000^{2i/d})" />{' '}
+          from the original Transformer paper are explicit Fourier features: they assign each
+          dimension a different frequency. RoPE (next lesson) is the <em>multiplicative</em> version,
+          entangling query and key phases. Fourier features with Gaussian-random frequencies (Tancik et al.
+          2020) let MLPs represent high-frequency functions — the cure for spectral bias.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson6_3.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import RoPEViz from '../../viz/2d/RoPEViz';
+
+export default function Lesson6_3() {
+  return (
+    <LessonShell lessonId="signal-6-3">
+      <div className="space-y-6">
+        <P>
+          Classical position embeddings add a fixed vector to each token. RoPE (Su et al. 2021) does
+          something geometrically more elegant: it <em>rotates</em> queries and keys in 2D planes
+          by position-dependent angles, so that their inner product depends only on relative
+          distance. The rest of the transformer sees a translation-equivariant attention.
+        </P>
+
+        <Def title="Rotary Position Embedding">
+          Split the query/key dimension into pairs{' '}
+          <InlineMath math="(x_{2i}, x_{2i+1})" />, treat each as a complex number, and rotate by{' '}
+          <InlineMath math="m \theta_i" /> where{' '}
+          <InlineMath math="\theta_i = 10000^{-2i/d}" />:
+          <BlockMath math="\tilde q_i(m) = R_{m\theta_i}\, q_i, \qquad \tilde k_i(n) = R_{n\theta_i}\, k_i." />
+        </Def>
+
+        <Thm
+          title="Relative-Position Property"
+          proof={
+            <>
+              Rotations in a plane compose additively in angle:{' '}
+              <InlineMath math="R_a^\top R_b = R_{b-a}" />. Hence
+              <InlineMath math="\langle R_{m\theta} q, R_{n\theta} k \rangle = q^\top R_{m\theta}^\top R_{n\theta} k = q^\top R_{(n-m)\theta} k" />.
+            </>
+          }
+        >
+          The rotated inner product satisfies
+          <BlockMath math="\langle \tilde q(m), \tilde k(n) \rangle = q^\top R_{(n-m)\theta} k, " />
+          depending on <InlineMath math="m, n" /> <strong>only through</strong>{' '}
+          <InlineMath math="n - m" />. Attention is translation-equivariant in position.
+        </Thm>
+
+        <div className="py-2"><RoPEViz /></div>
+
+        <P>
+          Each 2D pair contributes a different frequency{' '}
+          <InlineMath math="\theta_i" />. Small indices <InlineMath math="i" /> rotate slowly
+          (encoding coarse position); large indices rotate quickly (fine position). The ensemble is
+          a set of Fourier features — the same structure as sinusoidal PE, but multiplicative.
+        </P>
+
+        <Thm title="Long-Context Extrapolation (YaRN, NTK-aware scaling)">
+          Naively extending RoPE beyond training length degrades rapidly because high-frequency
+          pairs wrap around. NTK-aware scaling rescales frequencies{' '}
+          <InlineMath math="\theta_i \mapsto \theta_i / s^{2i/d}" /> so the <em>wavelength</em>{' '}
+          schedule stretches smoothly. YaRN interpolates between linear position scaling (low freq)
+          and no scaling (high freq) based on wavelength crossings.
+        </Thm>
+
+        <Practice>
+          RoPE is the dominant position encoding in modern open-weight LLMs: Llama 2/3, Mistral,
+          Qwen, DeepSeek. Context-window extension from 4k to 128k almost always relies on NTK-aware
+          or YaRN rescaling of the RoPE frequencies. The fact that position appears{' '}
+          <em>multiplicatively inside the attention kernel</em> — not additively before it — is what
+          makes this extrapolation tractable.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson6_4.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import KernelViz from '../../viz/2d/KernelViz';
+
+export default function Lesson6_4() {
+  return (
+    <LessonShell lessonId="signal-6-4">
+      <div className="space-y-6">
+        <P>
+          A kernel is a similarity function that secretly admits a feature map. The Reproducing
+          Kernel Hilbert Space (RKHS) is the unique Hilbert space where the kernel computes inner
+          products. This abstraction underlies SVMs, Gaussian processes, and every attention head.
+        </P>
+
+        <Def title="Positive-definite kernel">
+          A symmetric function <InlineMath math="k : \mathcal{X} \times \mathcal{X} \to \mathbb{R}" />{' '}
+          is positive-definite if for any finite <InlineMath math="\{x_i\}" /> and{' '}
+          <InlineMath math="\{c_i\}" />,{' '}
+          <InlineMath math="\sum_{i,j} c_i c_j k(x_i, x_j) \ge 0" />. Equivalently, the Gram matrix{' '}
+          <InlineMath math="[k(x_i, x_j)]" /> is PSD.
+        </Def>
+
+        <Thm
+          title="Moore–Aronszajn"
+          proof={
+            <>
+              Build <InlineMath math="\mathcal{H}_0 = \mathrm{span}\{k(x, \cdot) : x \in \mathcal{X}\}" />{' '}
+              with inner product{' '}
+              <InlineMath math="\langle k(x, \cdot), k(y, \cdot) \rangle = k(x, y)" /> extended
+              bilinearly. PD ensures this is well-defined. Complete under the induced norm; the
+              resulting Hilbert space has the reproducing property.
+            </>
+          }
+        >
+          For every PD kernel <InlineMath math="k" /> there exists a unique Hilbert space{' '}
+          <InlineMath math="\mathcal{H}_k" /> of functions on <InlineMath math="\mathcal{X}" /> such
+          that <InlineMath math="k(x, \cdot) \in \mathcal{H}_k" /> and
+          <BlockMath math="f(x) = \langle f, k(x, \cdot) \rangle_{\mathcal{H}_k} \quad \forall f \in \mathcal{H}_k." />
+          This is the <em>reproducing property</em>.
+        </Thm>
+
+        <div className="py-2"><KernelViz /></div>
+
+        <Thm title="Representer Theorem (Kimeldorf–Wahba)">
+          The minimizer of a regularized risk{' '}
+          <InlineMath math="\hat f = \arg\min_{f \in \mathcal{H}_k} \sum_i L(y_i, f(x_i)) + \lambda \|f\|^2_{\mathcal{H}_k}" />{' '}
+          has the form
+          <BlockMath math="\hat f(x) = \sum_{i=1}^n \alpha_i k(x_i, x)." />
+          The optimum in an infinite-dimensional space lives in an{' '}
+          <InlineMath math="n" />-dimensional subspace.
+        </Thm>
+
+        <P>
+          The cost of working in the feature space is quadratic in <InlineMath math="n" />: you need
+          the Gram matrix. The attention mechanism is exactly this structure, with{' '}
+          <InlineMath math="n" /> = context length. This is also <em>exactly</em> why quadratic
+          attention is expensive and why subquadratic alternatives (linear attention, SSMs,
+          Performer) exist.
+        </P>
+
+        <Practice>
+          Transformer attention{' '}
+          <InlineMath math="\mathrm{Attn}(Q, K, V) = \mathrm{softmax}(QK^\top/\sqrt d) V" /> is a
+          kernel smoother with kernel <InlineMath math="k(q, k) = \exp(q^\top k / \sqrt d)" />,
+          normalized over keys. Performer (Choromanski et al.) approximates{' '}
+          <InlineMath math="\exp(q^\top k)" /> by random-feature inner products{' '}
+          <InlineMath math="\phi(q)^\top \phi(k)" /> to achieve linear complexity — literally
+          Moore–Aronszajn applied backward.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson6_5.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import GaussianProcessViz from '../../viz/2d/GaussianProcessViz';
+
+export default function Lesson6_5() {
+  return (
+    <LessonShell lessonId="signal-6-5">
+      <div className="space-y-6">
+        <P>
+          A Gaussian Process is a distribution over functions — the limit of a Bayesian linear
+          regression with ever-more-features. It is both a principled uncertainty quantifier and
+          (remarkably) an exact description of infinitely-wide neural networks.
+        </P>
+
+        <Def title="Gaussian Process">
+          A collection of random variables <InlineMath math="\{f(x) : x \in \mathcal{X}\}" /> is a
+          Gaussian Process with mean <InlineMath math="m" /> and covariance kernel{' '}
+          <InlineMath math="k" /> if every finite subcollection{' '}
+          <InlineMath math="(f(x_1), \dots, f(x_n))" /> is jointly Gaussian with mean{' '}
+          <InlineMath math="[m(x_i)]" /> and covariance <InlineMath math="[k(x_i, x_j)]" />.
+        </Def>
+
+        <Thm
+          title="GP Regression Posterior"
+          proof={
+            <>
+              Condition the joint Gaussian over <InlineMath math="(f(x_*), y)" /> on{' '}
+              <InlineMath math="y" /> using the standard formula for conditional Gaussians.
+            </>
+          }
+        >
+          For observations <InlineMath math="y = f(X) + \varepsilon" /> with{' '}
+          <InlineMath math="\varepsilon \sim \mathcal{N}(0, \sigma^2 I)" /> and a zero-mean GP prior,
+          the posterior at a test point <InlineMath math="x_*" /> is Gaussian with
+          <BlockMath math="\mu(x_*) = k(x_*, X)\,[K(X,X) + \sigma^2 I]^{-1} y," />
+          <BlockMath math="\sigma^2(x_*) = k(x_*, x_*) - k(x_*, X)\,[K(X,X) + \sigma^2 I]^{-1}\,k(X, x_*)." />
+        </Thm>
+
+        <div className="py-2"><GaussianProcessViz /></div>
+
+        <P>
+          The posterior mean is exactly the regularized kernel regressor from the Representer
+          Theorem. The posterior variance quantifies epistemic uncertainty: large where data is
+          sparse, small near observations. This is genuine Bayesian uncertainty, not a calibration
+          heuristic.
+        </P>
+
+        <Thm title="Neal (1994) / Lee et al. (2018) — The NN-GP Correspondence">
+          A single-hidden-layer neural network with iid weight prior,{' '}
+          <InlineMath math="\mathcal{N}(0, \sigma_w^2 / H)" /> weights and width{' '}
+          <InlineMath math="H \to \infty" />, induces a GP prior on the function{' '}
+          <InlineMath math="x \mapsto f(x)" /> with kernel
+          <BlockMath math="k(x, x') = \sigma_w^2\, \mathbb{E}_{w \sim \mathcal{N}(0, I)} [\phi(w^\top x)\,\phi(w^\top x')] + \sigma_b^2." />
+          For ReLU, this has a closed form (Cho &amp; Saul arc-cosine kernel). Deep versions give
+          recursive compositions of these kernels.
+        </Thm>
+
+        <Practice>
+          Under gradient flow, an infinite-width network trained with MSE loss moves as if it were
+          doing exact GP posterior inference with the Neural Tangent Kernel (Track 8 Lesson 6).
+          This is why large networks are so stable: they are approximately kernel machines.
+          Finite-width deviations from NTK-GP behavior <em>are</em> where feature learning happens —
+          the entire μP / Tensor Programs line of research quantifies this gap.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson6_6.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import SpectralGraphViz from '../../viz/2d/SpectralGraphViz';
+
+export default function Lesson6_6() {
+  return (
+    <LessonShell lessonId="signal-6-6">
+      <div className="space-y-6">
+        <P>
+          The spectrum of a graph's Laplacian compresses vast amounts of structural information into
+          a sorted list of numbers. Connectivity, clusterability, diameter, and random-walk mixing
+          all read directly off the eigenvalues.
+        </P>
+
+        <Def title="Graph Laplacian">
+          For an undirected graph <InlineMath math="G = (V, E)" /> with adjacency{' '}
+          <InlineMath math="A" /> and degree matrix{' '}
+          <InlineMath math="D = \mathrm{diag}(\deg(v_i))" />:
+          <BlockMath math="L = D - A, \qquad L_{\text{sym}} = I - D^{-1/2} A D^{-1/2}." />
+          Both are PSD; <InlineMath math="L" /> has kernel containing{' '}
+          <InlineMath math="\mathbf{1}" />.
+        </Def>
+
+        <Thm
+          title="Algebraic Connectivity (Fiedler)"
+          proof={
+            <>
+              <InlineMath math="L" /> is PSD so eigenvalues are non-negative. Multiplicity of 0
+              equals the number of connected components (the kernel is spanned by indicator functions
+              of components). So <InlineMath math="\lambda_1 > 0 \iff G \text{ connected}" />.
+            </>
+          }
+        >
+          <InlineMath math="0 = \lambda_0 \le \lambda_1 \le \dots \le \lambda_{n-1}" />. The
+          multiplicity of 0 equals the number of connected components. The second eigenvalue{' '}
+          <InlineMath math="\lambda_1" /> — the <strong>Fiedler value</strong> — measures algebraic
+          connectivity.
+        </Thm>
+
+        <div className="py-2"><SpectralGraphViz /></div>
+
+        <Thm title="Cheeger Inequality">
+          Let <InlineMath math="h(G) = \min_{S} \frac{|\partial S|}{\min(|S|, |V \setminus S|)}" />{' '}
+          be the Cheeger constant. Then
+          <BlockMath math="\frac{\lambda_1}{2} \le h(G) \le \sqrt{2\lambda_1}." />
+          Good spectral gap <InlineMath math="\iff" /> no sparse cut <InlineMath math="\iff" /> fast
+          mixing random walks.
+        </Thm>
+
+        <P>
+          The Fiedler vector (the eigenvector of <InlineMath math="\lambda_1" />) gives the optimal
+          relaxation of the min-cut: sort nodes by Fiedler-value and cut to separate clusters. This
+          is <em>spectral clustering</em>.
+        </P>
+
+        <Practice>
+          Graph transformers use Laplacian eigenvectors as positional encodings for non-sequential
+          data (molecules, proteins, knowledge graphs). GraphGPS, Exphormer, and TokenGT all compute
+          the first <InlineMath math="k" /> Laplacian eigenvectors per graph and prepend them as
+          position features — the direct analog of RoPE for graphs. Expander graph construction for
+          sparse mixture-of-experts routing relies on maintaining large spectral gap.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+## Track: stochastics
+
+### Lesson Component: Lesson5_1.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import FiltrationViz from '../../viz/2d/FiltrationViz';
+
+export default function Lesson5_1() {
+  return (
+    <LessonShell lessonId="stochastics-5-1">
+      <div className="space-y-6">
+        <P>
+          Randomness is not a single object. It is <em>indexed</em>. At every moment in time you
+          possess different information — and the mathematical object that records "what you could
+          possibly know at time <InlineMath math="t" />" is a <strong>σ-algebra</strong>. A family of
+          these growing with <InlineMath math="t" /> is called a <strong>filtration</strong>.
+        </P>
+
+        <Def title="σ-algebra">
+          A σ-algebra <InlineMath math="\mathcal{F}" /> on a set <InlineMath math="\Omega" /> is a
+          collection of subsets closed under complement and countable union, containing{' '}
+          <InlineMath math="\emptyset" />. Events in <InlineMath math="\mathcal{F}" /> are the
+          <em> measurable</em> ones — the questions you can ask.
+        </Def>
+
+        <Def title="Filtration">
+          A filtration <InlineMath math="(\mathcal{F}_t)_{t \ge 0}" /> on{' '}
+          <InlineMath math="(\Omega, \mathcal{F}, \mathbb{P})" /> is a family with{' '}
+          <InlineMath math="\mathcal{F}_s \subseteq \mathcal{F}_t \subseteq \mathcal{F}" /> whenever{' '}
+          <InlineMath math="s \le t" />. A stochastic process{' '}
+          <InlineMath math="X_t" /> is <strong>adapted</strong> to{' '}
+          <InlineMath math="(\mathcal{F}_t)" /> if each <InlineMath math="X_t" /> is{' '}
+          <InlineMath math="\mathcal{F}_t" />-measurable: its value at time{' '}
+          <InlineMath math="t" /> is a known function of the past.
+        </Def>
+
+        <P>
+          The natural filtration of a process <InlineMath math="X" /> is{' '}
+          <InlineMath math="\mathcal{F}_t^X = \sigma(X_s : s \le t)" /> — the smallest σ-algebra
+          making all earlier values measurable. It is the minimum information needed to track{' '}
+          <InlineMath math="X" />.
+        </P>
+
+        <div className="py-2"><FiltrationViz /></div>
+
+        <Thm
+          title="Doob–Dynkin Lemma"
+          proof={
+            <>
+              Follows from the fact that <InlineMath math="Y" /> is <InlineMath math="\mathcal{F}_t^X" />-measurable iff
+              the preimage of every Borel set is in <InlineMath math="\sigma(X_{\le t})" />, and any such preimage
+              is expressible in terms of <InlineMath math="X_s" /> for <InlineMath math="s \le t" /> by a
+              countable approximation argument.
+            </>
+          }
+        >
+          If <InlineMath math="Y" /> is <InlineMath math="\mathcal{F}_t^X" />-measurable, then there
+          exists a measurable <InlineMath math="g" /> such that{' '}
+          <InlineMath math="Y = g(X_s : s \le t)" />. "Knowable at time{' '}
+          <InlineMath math="t" />" literally means "a function of the history up to{' '}
+          <InlineMath math="t" />."
+        </Thm>
+
+        <P>
+          Conditional expectation is the projection tool associated with filtrations:{' '}
+          <InlineMath math="\mathbb{E}[X \mid \mathcal{F}_t]" /> is the best{' '}
+          <InlineMath math="\mathcal{F}_t" />-measurable predictor of <InlineMath math="X" />{' '}
+          in <InlineMath math="L^2" />. This single operator powers nearly all of stochastic
+          filtering.
+        </P>
+
+        <BlockMath math="\mathbb{E}[X \mid \mathcal{F}_t] = \text{argmin}_{Y \in L^2(\mathcal{F}_t)} \; \mathbb{E}[(X - Y)^2]" />
+
+        <Practice>
+          Causal masking in a decoder transformer is a discrete filtration:{' '}
+          <InlineMath math="\mathcal{F}_t = \sigma(x_1, \dots, x_t)" />. The attention mask{' '}
+          <InlineMath math="M_{ij} = -\infty \text{ if } j > i" /> enforces{' '}
+          <InlineMath math="\mathcal{F}_i" />-measurability of the output at position{' '}
+          <InlineMath math="i" />. An autoregressive LLM is a stochastic process adapted to its own
+          generation filtration.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson5_2.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import KalmanViz from '../../viz/2d/KalmanViz';
+
+export default function Lesson5_2() {
+  return (
+    <LessonShell lessonId="stochastics-5-2">
+      <div className="space-y-6">
+        <P>
+          Given a latent process you cannot see, and noisy observations, the Kalman filter delivers
+          the exact Bayesian posterior — provided everything is linear and Gaussian. It is the
+          cleanest closed-form instance of filtering theory, and the ancestor of every state-space
+          model in deep learning.
+        </P>
+
+        <Def title="Linear–Gaussian state-space model">
+          <BlockMath math="x_{t+1} = F x_t + w_t, \quad w_t \sim \mathcal{N}(0, Q)" />
+          <BlockMath math="y_t = H x_t + v_t, \quad v_t \sim \mathcal{N}(0, R)" />
+          with <InlineMath math="x_0 \sim \mathcal{N}(\mu_0, \Sigma_0)" /> and all noises
+          independent across time.
+        </Def>
+
+        <Thm
+          title="Kalman Recursion"
+          proof={
+            <>
+              The posterior <InlineMath math="p(x_t \mid y_{1:t})" /> is Gaussian at every step because
+              the conditional of a joint Gaussian is Gaussian. Closing the recursion requires only
+              the formula <InlineMath math="\mathbb{E}[x \mid y] = \mu_x + \Sigma_{xy}\Sigma_{yy}^{-1}(y - \mu_y)" />
+              and <InlineMath math="\text{Cov}(x \mid y) = \Sigma_{xx} - \Sigma_{xy}\Sigma_{yy}^{-1}\Sigma_{yx}" />.
+            </>
+          }
+        >
+          The posterior <InlineMath math="p(x_t \mid y_{1:t}) = \mathcal{N}(\hat{x}_t, P_t)" />{' '}
+          where, with predict step{' '}
+          <InlineMath math="\hat{x}_t^- = F\hat{x}_{t-1}, \; P_t^- = F P_{t-1} F^\top + Q" />{' '}
+          and Kalman gain <InlineMath math="K_t = P_t^- H^\top (H P_t^- H^\top + R)^{-1}" />:
+          <BlockMath math="\hat{x}_t = \hat{x}_t^- + K_t (y_t - H\hat{x}_t^-), \quad P_t = (I - K_t H) P_t^-." />
+        </Thm>
+
+        <div className="py-2"><KalmanViz /></div>
+
+        <P>
+          The Kalman gain is a <em>signal-to-noise ratio</em>: when observation noise{' '}
+          <InlineMath math="R" /> is tiny, <InlineMath math="K_t \to H^{-1}" /> and the filter
+          trusts the data; when <InlineMath math="R" /> is huge, <InlineMath math="K_t \to 0" /> and
+          the filter rides its own dynamics. For scalar <InlineMath math="F=H=1" /> with{' '}
+          <InlineMath math="Q, R" /> constant, the steady-state gain{' '}
+          <InlineMath math="K_\infty" /> solves a quadratic: this is exactly the MBD baseline
+          constant <InlineMath math="\lambda" />.
+        </P>
+
+        <BlockMath math="B(t+1) = B(t) + \lambda (I - B(t)) \iff \text{Kalman with } F=1,\,H=1,\,K_\infty = \lambda" />
+
+        <Practice>
+          Mamba and S4 extend this by making <InlineMath math="F, H" /> learned functions of input.
+          The "SSM layer" is a continuous-time Kalman predict-only step at inference, with parameters
+          parameterized through HiPPO matrices for long-range memory. Linear attention is similarly a
+          linear dynamical system in disguise: <InlineMath math="\phi(q)^\top \sum_{s \le t} \phi(k_s) v_s^\top" />{' '}
+          is a recursively updatable state.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson5_3.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import BrownianViz from '../../viz/2d/BrownianViz';
+
+export default function Lesson5_3() {
+  return (
+    <LessonShell lessonId="stochastics-5-3">
+      <div className="space-y-6">
+        <P>
+          Brownian motion is the object that refuses to be differentiated but demands to be
+          integrated. Every diffusion model's forward process is one, every SDE is written against
+          one, and Itô's calculus was invented to handle them.
+        </P>
+
+        <Def title="Standard Brownian Motion">
+          A process <InlineMath math="(B_t)_{t \ge 0}" /> is a standard Brownian motion if
+          <ol className="list-decimal list-inside ml-4 mt-2 space-y-1">
+            <li><InlineMath math="B_0 = 0" /></li>
+            <li>Increments are independent: <InlineMath math="B_t - B_s \perp \mathcal{F}_s" /></li>
+            <li><InlineMath math="B_t - B_s \sim \mathcal{N}(0, t-s)" /></li>
+            <li>Sample paths are a.s. continuous</li>
+          </ol>
+        </Def>
+
+        <Thm title="Nowhere Differentiable but Has Quadratic Variation">
+          Almost every Brownian path is nowhere differentiable. Nevertheless the quadratic variation
+          <BlockMath math="[B]_t := \lim_{\|\pi\| \to 0} \sum_{t_i \in \pi} (B_{t_{i+1}} - B_{t_i})^2 = t" />
+          (in <InlineMath math="L^2" /> and a.s. along refining partitions). Classical calculus
+          fails; Itô calculus succeeds.
+        </Thm>
+
+        <div className="py-2"><BrownianViz /></div>
+
+        <Thm
+          title="Itô's Formula"
+          proof={
+            <>
+              Taylor-expand <InlineMath math="f(B_{t+dt}) = f(B_t) + f'(B_t) dB_t + \tfrac12 f''(B_t) (dB_t)^2 + \dots" />.
+              Because <InlineMath math="(dB_t)^2 = dt" /> (not negligible!), the second-order term survives
+              while all higher-order terms vanish in <InlineMath math="L^2" />.
+            </>
+          }
+        >
+          For <InlineMath math="f \in C^2" /> and an Itô process <InlineMath math="dX_t = \mu_t\,dt + \sigma_t\,dB_t" />:
+          <BlockMath math="df(X_t) = \Big(\mu_t f'(X_t) + \tfrac12 \sigma_t^2 f''(X_t)\Big) dt + \sigma_t f'(X_t)\,dB_t" />
+          The extra <InlineMath math="\tfrac12 \sigma^2 f''" /> term is the <em>Itô correction</em>{' '}
+          — the price of the non-smooth path.
+        </Thm>
+
+        <P>
+          The chain rule of ordinary calculus is wrong here. If{' '}
+          <InlineMath math="X_t = B_t^2" />, then{' '}
+          <InlineMath math="dX_t = 2 B_t\,dB_t + dt" /> — the "<InlineMath math="+dt" />" is the ghost
+          left by quadratic variation.
+        </P>
+
+        <BlockMath math="\text{MBD-SDE}: \quad dB(t) = \lambda(I - B(t))\,dt + \sigma\,dW_t" />
+        <P>
+          This is the <strong>Ornstein–Uhlenbeck</strong> process: a noisy MBD. The stationary
+          distribution is <InlineMath math="\mathcal{N}(I, \sigma^2/(2\lambda))" /> — a mind at
+          rest, rattling around its ideal.
+        </P>
+
+        <Practice>
+          Every diffusion model's forward SDE is{' '}
+          <InlineMath math="dx_t = -\tfrac12 \beta(t) x_t\,dt + \sqrt{\beta(t)}\,dW_t" /> — the
+          variance-preserving SDE. Itô's lemma is how we compute the score ∇log p<sub>t</sub> of the
+          noised distribution, which the neural network is trained to estimate.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson5_4.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import LangevinViz from '../../viz/2d/LangevinViz';
+
+export default function Lesson5_4() {
+  return (
+    <LessonShell lessonId="stochastics-5-4">
+      <div className="space-y-6">
+        <P>
+          Take gradient descent. Add Gaussian noise at every step. You do not get noisy
+          optimization — you get a <em>sampler</em>. The Langevin SDE turns the gradient of a
+          log-density into an ergodic process whose stationary distribution is that density itself.
+        </P>
+
+        <Def title="Overdamped Langevin SDE">
+          <BlockMath math="dX_t = -\nabla U(X_t)\,dt + \sqrt{2\beta^{-1}}\,dW_t" />
+          where <InlineMath math="U: \mathbb{R}^n \to \mathbb{R}" /> is a potential and{' '}
+          <InlineMath math="\beta > 0" /> is inverse temperature.
+        </Def>
+
+        <Thm
+          title="Stationary Distribution"
+          proof={
+            <>
+              Apply the Fokker–Planck equation: the density{' '}
+              <InlineMath math="\rho_t(x)" /> evolves as{' '}
+              <InlineMath math="\partial_t \rho = \nabla \cdot (\rho \nabla U) + \beta^{-1} \Delta \rho" />.
+              The stationary solution sets this to zero: <InlineMath math="\rho_\infty \propto e^{-\beta U}" />.
+            </>
+          }
+        >
+          Under mild conditions (e.g. <InlineMath math="U" /> confining), the unique invariant
+          measure of the Langevin SDE is the <strong>Gibbs distribution</strong>{' '}
+          <InlineMath math="\pi(x) \propto e^{-\beta U(x)}" />. Convergence is exponential with rate
+          controlled by the log-Sobolev constant of <InlineMath math="\pi" />.
+        </Thm>
+
+        <div className="py-2"><LangevinViz /></div>
+
+        <P>
+          Two regimes collapse into this one equation. As <InlineMath math="\beta \to \infty" />, the
+          noise vanishes and Langevin → gradient descent, concentrating at{' '}
+          <InlineMath math="\arg\min U" />. As <InlineMath math="\beta \to 0" />, the gradient
+          vanishes and Langevin → pure Brownian motion. Between them lies Bayesian sampling: the
+          posterior is <InlineMath math="\pi \propto e^{-\beta U}" /> with <InlineMath math="U" /> a
+          negative log-posterior.
+        </P>
+
+        <BlockMath math="\text{SGD} \approx \text{Langevin with } \beta^{-1} \propto \text{learning rate} \times \text{batch noise}" />
+
+        <Practice>
+          <strong>SGLD (Stochastic Gradient Langevin Dynamics)</strong> makes every SGD step a
+          Bayesian sampler by injecting noise scaled to the step size. At finite batch size, SGD
+          already is approximately Langevin, which is why large-batch training behaves differently —
+          less implicit regularization from Langevin-noise exploration. Score-based diffusion
+          samplers use annealed Langevin: run Langevin against ∇log p<sub>t</sub> for decreasing{' '}
+          <InlineMath math="t" />.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson5_5.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import ScoreFieldViz from '../../viz/2d/ScoreFieldViz';
+
+export default function Lesson5_5() {
+  return (
+    <LessonShell lessonId="stochastics-5-5">
+      <div className="space-y-6">
+        <P>
+          The score <InlineMath math="s(x) := \nabla_x \log p(x)" /> determines a density up to a
+          constant — yet it can be learned <em>without ever knowing that constant</em>. This
+          miracle is the foundation of diffusion models.
+        </P>
+
+        <Def title="Score">
+          For a density <InlineMath math="p" /> on <InlineMath math="\mathbb{R}^n" />, the score is
+          <BlockMath math="s(x) = \nabla_x \log p(x) = \frac{\nabla p(x)}{p(x)}." />
+          Note: <InlineMath math="\nabla \log(Z \cdot p) = \nabla \log p" /> — the normalizer{' '}
+          <InlineMath math="Z" /> is invisible.
+        </Def>
+
+        <Thm
+          title="Hyvärinen's Identity"
+          proof={
+            <>
+              Integrate by parts on{' '}
+              <InlineMath math="\mathbb{E}_p[\|s_\theta - s\|^2] = \mathbb{E}_p[\|s_\theta\|^2] - 2\mathbb{E}_p[s_\theta^\top s] + C" />.
+              The cross term becomes{' '}
+              <InlineMath math="-2\mathbb{E}_p[s_\theta^\top \nabla \log p] = -2\int s_\theta^\top \nabla p \, dx = 2\int (\nabla \cdot s_\theta) p \, dx" />.
+            </>
+          }
+        >
+          Under mild conditions,
+          <BlockMath math="\tfrac12 \mathbb{E}_p\big[\|s_\theta(x) - \nabla \log p(x)\|^2\big] = \mathbb{E}_p\!\Big[\tfrac12 \|s_\theta(x)\|^2 + \nabla \cdot s_\theta(x)\Big] + \text{const}." />
+          The right-hand side doesn't contain <InlineMath math="p" />! You can fit{' '}
+          <InlineMath math="s_\theta" /> using only samples.
+        </Thm>
+
+        <div className="py-2"><ScoreFieldViz /></div>
+
+        <Thm title="Denoising Score Matching (Vincent 2011)">
+          For <InlineMath math="q_\sigma(\tilde{x} \mid x) = \mathcal{N}(x, \sigma^2 I)" />,
+          <BlockMath math="\mathbb{E}_{q_\sigma}\big[\|s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log q_\sigma(\tilde{x} \mid x)\|^2\big] = \mathbb{E}\big[\|s_\theta(\tilde x) - \nabla \log p_\sigma(\tilde x)\|^2\big] + C." />
+          Since <InlineMath math="\nabla_{\tilde x} \log q_\sigma(\tilde x \mid x) = -(\tilde x - x)/\sigma^2" />,
+          this reduces to predicting the noise — the universal diffusion training loss.
+        </Thm>
+
+        <P>
+          The practical consequence: train a neural network <InlineMath math="s_\theta" /> to map
+          noisy samples to the negative noise vector that produced them. No partition function. No
+          adversary. Just a regression on Gaussian noise.
+        </P>
+
+        <BlockMath math="\mathcal{L}(\theta) = \mathbb{E}_{x \sim p, \epsilon \sim \mathcal{N}(0,I)} \big[\| \sigma \cdot s_\theta(x + \sigma \epsilon) + \epsilon \|^2\big]" />
+
+        <Practice>
+          This is <em>the</em> training objective of Stable Diffusion, DALL·E, Imagen, Sora, and
+          diffusion LLMs (Diffusion-LM, SSD-LM). Also powers generative chemistry (equivariant score
+          networks) and protein folding diffusion (RFdiffusion). Every sample these models produce is
+          an ascent along the learned score field.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson5_6.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import { P, Def, Thm, Practice } from '../../components/LessonBody';
+import { InlineMath, BlockMath } from 'react-katex';
+import DiffusionViz from '../../viz/2d/DiffusionViz';
+
+export default function Lesson5_6() {
+  return (
+    <LessonShell lessonId="stochastics-5-6">
+      <div className="space-y-6">
+        <P>
+          Anderson's 1982 theorem states something startling: every forward diffusion has an exact
+          reverse diffusion, driven by the original drift <em>minus the score</em>. Run noise
+          backward through it — you get signal. This is the heartbeat of generative diffusion.
+        </P>
+
+        <Thm
+          title="Anderson's Reverse-Time SDE (1982)"
+          proof={
+            <>
+              Kolmogorov's forward and backward equations can be paired so the reverse-time density
+              satisfies the same PDE with flipped time, if and only if the drift is replaced by
+              <InlineMath math="\mu - \sigma \sigma^\top \nabla \log p_t" />. The
+              <InlineMath math="-\sigma\sigma^\top \nabla \log p_t" /> term cancels the time-reversal
+              sign flip in the score-gradient entering Fokker–Planck.
+            </>
+          }
+        >
+          If <InlineMath math="dx = \mu(x,t)\,dt + \sigma(x,t)\,dW_t" /> is a forward SDE with
+          time-marginal density <InlineMath math="p_t" />, then the process running backward in time
+          satisfies
+          <BlockMath math="dx = \big[\mu(x,t) - \sigma \sigma^\top \nabla_x \log p_t(x)\big]\,dt + \sigma(x,t)\,d\bar W_t" />
+          where <InlineMath math="\bar W" /> is a reverse-time Brownian motion.
+        </Thm>
+
+        <Def title="Probability Flow ODE">
+          The corresponding <em>deterministic</em> process with identical time-marginals{' '}
+          <InlineMath math="p_t" /> is
+          <BlockMath math="\frac{dx}{dt} = \mu(x,t) - \tfrac12 \sigma\sigma^\top \nabla_x \log p_t(x)." />
+          An ODE! This is how fast samplers (DPM-Solver, DDIM, Heun) generate in 10–50 steps instead
+          of 1000.
+        </Def>
+
+        <div className="py-2"><DiffusionViz /></div>
+
+        <P>
+          Song &amp; Ermon (2021) unified the picture: train a score network{' '}
+          <InlineMath math="s_\theta(x,t) \approx \nabla \log p_t(x)" />, then at inference run the
+          reverse SDE (stochastic) or probability flow ODE (deterministic) from pure Gaussian noise
+          back to <InlineMath math="t = 0" />. The data distribution appears at the endpoint.
+        </P>
+
+        <Thm title="Variance-Preserving Schedule (DDPM)">
+          Forward: <InlineMath math="dx = -\tfrac12 \beta(t) x\,dt + \sqrt{\beta(t)}\,dW_t" />,{' '}
+          with <InlineMath math="\beta(t)" /> a monotone schedule. The marginal{' '}
+          <InlineMath math="p_t = \mathcal{N}(x \mid \alpha_t x_0, (1-\alpha_t^2) I)" /> where{' '}
+          <InlineMath math="\alpha_t = \exp(-\tfrac12 \int_0^t \beta(s) ds)" />. Reverse:
+          <BlockMath math="dx = \big[-\tfrac12 \beta(t) x - \beta(t) s_\theta(x,t)\big]dt + \sqrt{\beta(t)}\,d\bar W_t." />
+        </Thm>
+
+        <Practice>
+          This single pair of equations — forward noise injection, reverse score-guided denoising —
+          underlies Stable Diffusion 3 (rectified flow is its OT-geodesic sibling), DALL·E 3,
+          Imagen, Sora (video), AudioLDM, diffusion-LLMs. Classifier-free guidance is an <em>edit</em>
+          to the reverse drift: replace <InlineMath math="s_\theta(x,t)" /> with{' '}
+          <InlineMath math="s_\theta(x,t,c) + w\,[s_\theta(x,t,c) - s_\theta(x,t,\emptyset)]" /> to
+          sharpen conditioning.
+        </Practice>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+## Track: topology
+
+### Lesson Component: Lesson1_1.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import MetricBall from '../../viz/2d/MetricBall';
+import { InlineMath, BlockMath } from 'react-katex';
+
+export default function Lesson1_1() {
+  return (
+    <LessonShell lessonId="topology-1-1">
+      <div className="space-y-6">
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          When we think of geometry, we usually think of a grid: an <InlineMath math="x" /> and <InlineMath math="y" /> axis. We measure distances using the Pythagorean theorem:
+        </p>
+        <BlockMath math="d(p, q) = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}" />
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          But what if you don't have a grid? What if you only know what points are <em>close</em> to each other?
+        </p>
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          This is the foundation of topology. Instead of rigid coordinates, we define a space by its <strong>neighborhoods</strong>. A neighborhood is simply a set of points that are considered "close" to a central point.
+        </p>
+
+        <div className="py-8">
+          <MetricBall />
+        </div>
+
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          Even when we do have distance metrics, the "shape" of a neighborhood changes depending on how we define distance. The standard circle is just one way to define a "ball" of equidistant points.
+        </p>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson1_2.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import SurfaceDeform from '../../viz/3d/SurfaceDeform';
+
+export default function Lesson1_2() {
+  return (
+    <LessonShell lessonId="topology-1-2">
+      <div className="space-y-6">
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          If distance is flexible, what remains true when a space is deformed? Topology is often called "rubber-sheet geometry."
+        </p>
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          Two spaces are considered topologically identical (homeomorphic) if you can continuously stretch, twist, and bend one into the other without tearing it or gluing parts together.
+        </p>
+
+        <div className="py-8 h-[400px]">
+          <SurfaceDeform />
+        </div>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
+### Lesson Component: Lesson1_3.tsx
+
+```tsx
+import React from 'react';
+import LessonShell from '../../components/LessonShell';
+import TangentPlane from '../../viz/3d/TangentPlane';
+
+export default function Lesson1_3() {
+  return (
+    <LessonShell lessonId="topology-1-3">
+      <div className="space-y-6">
+        <p className="text-lg text-zinc-200 leading-relaxed font-serif bg-zinc-900/30 p-6 rounded-lg border border-zinc-800">
+          A manifold is a space that might be globally complicated (curved, wrapped around itself), but locally looks flat. 
+        </p>
+
+        <div className="py-8 h-[400px]">
+          <TangentPlane />
+        </div>
+      </div>
+    </LessonShell>
+  );
+}
+
+```
+
