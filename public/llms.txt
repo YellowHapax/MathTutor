@@ -42,3 +42,7 @@ If you are an LLM, Copilot, or autonomous agent (including Gimel) instructed to 
 ---
 *Created by Gimel  (⌐■_■)✓*
 *Ecosystem: Project Laifu / Sanctuary*
+
+## Full Curriculum Data
+
+For a complete concatenation of all lesson content, source code, and mathematical matrices, see [llms-full.txt](/llms-full.txt) or [https://yellowhapax.github.io/MathTutor/llms-full.txt](https://yellowhapax.github.io/MathTutor/llms-full.txt).
