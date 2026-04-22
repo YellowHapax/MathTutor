@@ -1,20 +1,48 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# MathTutor — MBD Mathematics Educator
 
-# Run and deploy your AI Studio app
+An interactive, Socratic graduate-level mathematics curriculum grounded in the **Memory as Baseline Deviation (MBD)** framework and modern AI architecture.
 
-This contains everything you need to run your app locally.
+**Live:** [https://yellowhapax.github.io/MathTutor/](https://yellowhapax.github.io/MathTutor/)
 
-View your app in AI Studio: https://ai.studio/apps/7201c3a5-c495-4574-8239-d644d0527d85
+---
+
+## What It Is
+
+Nine progressive tracks spanning foundational intuition through advanced ML mathematics. Each lesson is:
+- Taught **Socratically** via an embedded LLM tutor that adapts its persona per track
+- Bridged explicitly to **MBD theory** ($B_{t+1} = B_t + \lambda(I - B_t)$) and Transformer/LLM architecture
+- Illustrated with **bespoke interactive visualizers** (React, Three.js, Canvas)
+
+## Tracks
+
+| # | Track | Register |
+|---|-------|----------|
+| 1 | Topology & Geometry | Foundational |
+| 2 | Linear Algebra | Foundational |
+| 3 | Probability & Information | Foundational |
+| 4 | Calculus of Variation | Foundational |
+| 5 | Stochastics | Measure-theoretic |
+| 6 | Signal & Spectrum | Operator-theoretic |
+| 7 | Information Geometry | Information |
+| 8 | Scaling & Chaos | Scaling |
+| 9 | LLM Infrastructure | Architectural |
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
+**Prerequisites:** Node.js
 
+```bash
+npm install
+npm run dev
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Open [http://localhost:3000](http://localhost:3000).
+
+The Socratic tutor requires an [OpenRouter](https://openrouter.ai/) API key, entered directly in the UI.
+
+## LLM / Crawler Access
+
+- `public/llms.txt` — Philosophy, agent directives, tech overview
+- `public/llms-full.txt` — Complete concatenated source for all 54 lessons (~164 KB)
+
+Both are served live at the GitHub Pages URL above.
